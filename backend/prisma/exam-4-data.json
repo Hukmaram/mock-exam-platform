@@ -1,0 +1,877 @@
+[
+  {
+    "orderIndex": 1,
+    "domainCode": "DOM-3",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team is using the GitHub Copilot cloud agent to automate a complex multi-step task: refactoring a legacy authentication module across 15 files, updating unit tests, and then generating a summary report. Midway through the task, the agent begins making errors because its context window is becoming overloaded with information from earlier steps that is no longer relevant to the current subtask of updating unit tests. Which strategy best addresses this problem by scoping the agent's memory to task-relevant information?",
+    "explanation": "Effective agent memory scoping means limiting the agent's active context to only the information necessary for the current subtask, rather than carrying forward all prior context indefinitely. In multi-step agentic workflows, completed-step details should be summarized or discarded so the context window remains focused and efficient. Structuring agent instructions to explicitly transition context between steps—retaining only relevant outputs like updated interfaces—is the recommended pattern for preventing context overload in the GitHub Copilot cloud agent.\n\nA: This answer is incorrect. Front-loading the agent with the full content of all files and templates at the start maximizes context consumption from the very beginning, which is the opposite of scoping memory to task-relevant information. This approach would accelerate context window exhaustion rather than mitigate it.\nB: This answer is incorrect. Reloading the entire artifact at each step reintroduces all previously accumulated context rather than filtering it to what is relevant for the current step. This strategy does not scope memory to task-relevant information; it simply shifts when the full context is loaded, not what context is loaded.\nC: This answer is correct. Explicitly scoping the agent's active context to only the information relevant to the current subtask—the updated module interfaces and test files—directly implements the principle of task-relevant memory scoping. By instructing the agent to set aside completed-step details, the context window is freed for the information that actually matters to the unit test update step, reducing errors caused by irrelevant accumulated context.\nD: This answer is incorrect. Combining everything into a single larger job does not address the core problem of irrelevant context accumulating in the agent's memory; it would likely worsen the overload by keeping all information in scope simultaneously. Token limits are a constraint of the underlying model, not something resolved by restructuring GitHub Actions job boundaries.",
+    "overallExplanation": "Effective agent memory scoping means limiting the agent's active context to only the information necessary for the current subtask, rather than carrying forward all prior context indefinitely. In multi-step agentic workflows, completed-step details should be summarized or discarded so the context window remains focused and efficient. Structuring agent instructions to explicitly transition context between steps—retaining only relevant outputs like updated interfaces—is the recommended pattern for preventing context overload in the GitHub Copilot cloud agent.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Provide the agent with a comprehensive system prompt at the start that includes the full content of all 15 files, all test files, and the report template so it has complete context throughout every step.",
+        "explanation": "This answer is incorrect. Front-loading the agent with the full content of all files and templates at the start maximizes context consumption from the very beginning, which is the opposite of scoping memory to task-relevant information. This approach would accelerate context window exhaustion rather than mitigate it.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Store all intermediate outputs from each step in a GitHub Actions artifact and instruct the agent to reload the entire artifact at the beginning of each subsequent step.",
+        "explanation": "This answer is incorrect. Reloading the entire artifact at each step reintroduces all previously accumulated context rather than filtering it to what is relevant for the current step. This strategy does not scope memory to task-relevant information; it simply shifts when the full context is loaded, not what context is loaded.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Structure the agent's instructions so that after completing the refactoring step, the agent is explicitly told to focus only on the test files and the updated module interfaces, discarding accumulated context from the completed refactoring details.",
+        "explanation": "This answer is correct. Explicitly scoping the agent's active context to only the information relevant to the current subtask—the updated module interfaces and test files—directly implements the principle of task-relevant memory scoping. By instructing the agent to set aside completed-step details, the context window is freed for the information that actually matters to the unit test update step, reducing errors caused by irrelevant accumulated context.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "Increase the token limit for the GitHub Copilot cloud agent by splitting the task into a single larger GitHub Actions workflow job so all context is available simultaneously.",
+        "explanation": "This answer is incorrect. Combining everything into a single larger job does not address the core problem of irrelevant context accumulating in the agent's memory; it would likely worsen the overload by keeping all information in scope simultaneously. Token limits are a constraint of the underlying model, not something resolved by restructuring GitHub Actions job boundaries.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 2,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team runs a custom agent as a job inside a GitHub Actions workflow. The repository has a main branch protected by a ruleset, and the team uses a dedicated staging repository environment for pre-production validation. They want the agent's job to run only within the staging environment and to hold token permissions narrow enough that it cannot push directly to main or reach secrets outside that environment. Which configuration correctly enforces these environment-specific constraints?",
+    "explanation": "When configuring the GitHub Copilot agent to operate within environment-specific constraints, the key mechanisms are the environment key in the GitHub Actions job definition and carefully scoped GITHUB_TOKEN permissions. The environment key binds the job to a specific repository environment, enforcing that environment's protection rules and limiting secret access, while minimal but sufficient token permissions (such as contents: write and pull-requests: write) ensure the agent can perform its tasks without gaining unnecessary privileges over the broader repository.\n\nA: This answer is correct. Specifying environment: staging in the GitHub Actions job causes the workflow to run in the context of the staging repository environment, ensuring that only secrets and variables defined for that environment are accessible and that any environment protection rules (such as required reviewers) are enforced. Scoping the GITHUB_TOKEN to contents: write and pull-requests: write grants the agent exactly the permissions it needs to create branches and open pull requests without elevating privileges beyond what is necessary, aligning with least-privilege principles.\nB: This answer is incorrect. While setting environment: staging is correct, restricting the GITHUB_TOKEN to contents: read only prevents the agent from writing code changes or creating pull requests, which are core operations required for the agent to function. This configuration would make the agent unable to propose or implement any changes, rendering it non-functional for its intended purpose.\nC: This answer is incorrect. Omitting the environment key means the workflow does not run within the staging environment context, so environment-specific secrets, variables, and protection rules are not applied. Using a fine-grained personal access token with broad repository-scoped permissions also bypasses environment boundaries and does not restrict the agent to the staging environment, defeating the purpose of environment-specific constraints.\nD: This answer is incorrect. Granting the GITHUB_TOKEN admin permissions violates the principle of least privilege and would allow the agent to perform privileged repository operations—such as modifying branch protection rules or managing webhooks—far beyond what is required. While setting environment: staging correctly scopes the environment, the overly broad token permissions undermine the security constraint the team wants to enforce.",
+    "overallExplanation": "When configuring the GitHub Copilot agent to operate within environment-specific constraints, the key mechanisms are the environment key in the GitHub Actions job definition and carefully scoped GITHUB_TOKEN permissions. The environment key binds the job to a specific repository environment, enforcing that environment's protection rules and limiting secret access, while minimal but sufficient token permissions (such as contents: write and pull-requests: write) ensure the agent can perform its tasks without gaining unnecessary privileges over the broader repository.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Define the GitHub Actions job that runs the agent, set the environment key to staging in the job definition, and scope the GITHUB_TOKEN permissions to contents: write and pull-requests: write only. Rely on the staging environment's protection rules to gate deployments.",
+        "explanation": "This answer is correct. Specifying environment: staging in the GitHub Actions job causes the workflow to run in the context of the staging repository environment, ensuring that only secrets and variables defined for that environment are accessible and that any environment protection rules (such as required reviewers) are enforced. Scoping the GITHUB_TOKEN to contents: write and pull-requests: write grants the agent exactly the permissions it needs to create branches and open pull requests without elevating privileges beyond what is necessary, aligning with least-privilege principles.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Define the GitHub Actions job that runs the agent, set the environment key to staging in the job definition, and grant the GITHUB_TOKEN contents: read permissions only, preventing the agent from creating or updating pull requests needed to propose changes.",
+        "explanation": "This answer is incorrect. While setting environment: staging is correct, restricting the GITHUB_TOKEN to contents: read only prevents the agent from writing code changes or creating pull requests, which are core operations required for the agent to function. This configuration would make the agent unable to propose or implement any changes, rendering it non-functional for its intended purpose.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Define the GitHub Actions job that runs the agent without specifying an environment key, and instead apply a fine-grained personal access token with repository-scoped read/write permissions to allow the agent to operate across all branches and environments.",
+        "explanation": "This answer is incorrect. Omitting the environment key means the workflow does not run within the staging environment context, so environment-specific secrets, variables, and protection rules are not applied. Using a fine-grained personal access token with broad repository-scoped permissions also bypasses environment boundaries and does not restrict the agent to the staging environment, defeating the purpose of environment-specific constraints.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Define the GitHub Actions job that runs the agent, set the environment key to staging in the job definition, and grant the GITHUB_TOKEN admin permissions so the agent can manage all required resources within the staging environment without restriction.",
+        "explanation": "This answer is incorrect. Granting the GITHUB_TOKEN admin permissions violates the principle of least privilege and would allow the agent to perform privileged repository operations—such as modifying branch protection rules or managing webhooks—far beyond what is required. While setting environment: staging correctly scopes the environment, the overly broad token permissions undermine the security constraint the team wants to enforce.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 3,
+    "domainCode": "DOM-6",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A financial services organization is using the GitHub Copilot cloud agent to autonomously implement features in a repository that handles payment processing data. The security team requires that no pull request generated by the cloud agent can be merged without a human reviewer approving it, and that any workflow triggered by the agent must not have write access to production secrets. Which combination of GitHub configurations best enforces these guardrails?",
+    "explanation": "Implementing human-in-the-loop guardrails for an autonomous cloud agent requires layered controls. Branch protection with required pull request reviews ensures a human must explicitly approve any agent-generated change before it merges, and repository environments with required reviewers and environment-scoped secrets gate access to production credentials behind a separate approval step in the workflow. Applying only one of the two leaves either the merge path or the secret path open. Together they address both the merge-blocking and the secret-access requirements the security team stated.\n\nA: This answer is incorrect. While setting the GITHUB_TOKEN to read-only restricts workflow permissions, this approach does not specifically gate access to production secrets behind a human approval step. Branch protection rules with required reviewers address the PR merge guardrail, but read-only GITHUB_TOKEN permissions alone do not prevent a workflow from running and attempting to access secrets scoped to a non-protected environment.\nB: This answer is correct. Branch protection rules with required pull request reviews enforce that no agent-generated pull request can be merged without explicit human approval, directly implementing the human-in-the-loop requirement. Repository environments with required reviewers ensure that any workflow job targeting the production environment—and its scoped secrets—is paused until a human approves deployment, preventing the cloud agent from autonomously accessing sensitive credentials.\nC: This answer is incorrect. Copilot code review and GitHub Advanced Security scans are valuable automated checks, but they do not constitute a human-in-the-loop control. Automated vulnerability scanning can block merges on detected issues, but the question specifically requires a human reviewer to approve the action, and relying solely on automated tools does not satisfy that Responsible AI and compliance requirement.\nD: This answer is incorrect. Assigning a fine-grained personal access token with read-only permissions to the cloud agent restricts what the agent can do directly, but it does not enforce a human approval gate on the pull request merge process or on workflow access to production secrets. Draft pull requests can be converted to ready-for-review by the agent itself in many configurations, making this an unreliable guardrail without additional branch protection enforcement.",
+    "overallExplanation": "Implementing human-in-the-loop guardrails for an autonomous cloud agent requires layered controls. Branch protection with required pull request reviews ensures a human must explicitly approve any agent-generated change before it merges, and repository environments with required reviewers and environment-scoped secrets gate access to production credentials behind a separate approval step in the workflow. Applying only one of the two leaves either the merge path or the secret path open. Together they address both the merge-blocking and the secret-access requirements the security team stated.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Enable required reviewers on the default branch using branch protection rules, and restrict the GITHUB_TOKEN permissions to read-only in the repository's Actions settings so that agent-triggered workflows cannot access write-scoped secrets.",
+        "explanation": "This answer is incorrect. While setting the GITHUB_TOKEN to read-only restricts workflow permissions, this approach does not specifically gate access to production secrets behind a human approval step. Branch protection rules with required reviewers address the PR merge guardrail, but read-only GITHUB_TOKEN permissions alone do not prevent a workflow from running and attempting to access secrets scoped to a non-protected environment.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Enable required pull request reviews on the default branch using branch protection rules, and use repository environments with required reviewers and environment-scoped secrets so that agent-triggered workflows must receive human approval before accessing production secrets.",
+        "explanation": "This answer is correct. Branch protection rules with required pull request reviews enforce that no agent-generated pull request can be merged without explicit human approval, directly implementing the human-in-the-loop requirement. Repository environments with required reviewers ensure that any workflow job targeting the production environment—and its scoped secrets—is paused until a human approves deployment, preventing the cloud agent from autonomously accessing sensitive credentials.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Enable Copilot code review on all pull requests and configure GitHub Advanced Security to block merges when vulnerabilities are detected, relying on automated scans to serve as the human-in-the-loop checkpoint.",
+        "explanation": "This answer is incorrect. Copilot code review and GitHub Advanced Security scans are valuable automated checks, but they do not constitute a human-in-the-loop control. Automated vulnerability scanning can block merges on detected issues, but the question specifically requires a human reviewer to approve the action, and relying solely on automated tools does not satisfy that Responsible AI and compliance requirement.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Create a fine-grained personal access token scoped to the repository with read-only permissions and assign it to the cloud agent, then require the agent to open draft pull requests that cannot be merged until manually converted to ready for review.",
+        "explanation": "This answer is incorrect. Assigning a fine-grained personal access token with read-only permissions to the cloud agent restricts what the agent can do directly, but it does not enforce a human approval gate on the pull request merge process or on workflow access to production secrets. Draft pull requests can be converted to ready-for-review by the agent itself in many configurations, making this an unreliable guardrail without additional branch protection enforcement.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 4,
+    "domainCode": "DOM-4",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A developer assigned a task to the GitHub Copilot cloud agent to refactor a large module and open a pull request. The agent created a branch and began executing, but the pull request was never opened and the agent session ended without completing the task. To diagnose the root cause, the developer reviews the available artifacts. Which artifact would most directly reveal the specific step at which the agent stopped making progress and why execution halted?",
+    "explanation": "When diagnosing a GitHub Copilot cloud agent failure, the agent's own activity log and execution trace is the primary diagnostic artifact because it captures the agent's internal plan, each tool invocation, and any errors in sequence. This trace-based approach mirrors how developers debug complex automated processes — by examining the ordered record of actions and failures rather than downstream artifacts like CI logs or configuration settings. Understanding how to locate and interpret this trace is a core skill for identifying root causes of agent failures on the GH-600 exam.\n\nA: This answer is incorrect. A pull request description would only exist if the agent successfully opened a pull request, which did not occur in this scenario. It also describes intended changes rather than providing a step-by-step trace of where and why execution stopped.\nB: This answer is correct. The GitHub Copilot cloud agent's activity log and execution trace record each individual step the agent planned, every tool call it made (such as file edits, terminal commands, or API calls), and any errors or permission failures it encountered. Reviewing this trace directly reveals the exact step at which execution halted and the associated error or unexpected condition that caused the failure.\nC: This answer is incorrect. Branch protection rules define merge requirements and would not explain why the agent failed to open a pull request in the first place. These rules apply at merge time, not during the agent's task execution phase, so they are not a diagnostic artifact for agent execution failures.\nD: This answer is incorrect. GitHub Actions workflow logs reflect the CI pipeline's behavior on the agent's branch, not the agent's own execution steps. While useful for understanding test results, they would not show why the agent itself stopped before opening a pull request, especially if the agent never reached the point of triggering CI.",
+    "overallExplanation": "When diagnosing a GitHub Copilot cloud agent failure, the agent's own activity log and execution trace is the primary diagnostic artifact because it captures the agent's internal plan, each tool invocation, and any errors in sequence. This trace-based approach mirrors how developers debug complex automated processes — by examining the ordered record of actions and failures rather than downstream artifacts like CI logs or configuration settings. Understanding how to locate and interpret this trace is a core skill for identifying root causes of agent failures on the GH-600 exam.",
+    "options": [
+      {
+        "key": "A",
+        "text": "The pull request description drafted by the GitHub Copilot cloud agent, which summarizes the changes it intended to make before stopping.",
+        "explanation": "This answer is incorrect. A pull request description would only exist if the agent successfully opened a pull request, which did not occur in this scenario. It also describes intended changes rather than providing a step-by-step trace of where and why execution stopped.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "The agent's activity log and execution trace in the Copilot cloud agent session, which records each planned step, tool call, and any error messages encountered during the run.",
+        "explanation": "This answer is correct. The GitHub Copilot cloud agent's activity log and execution trace record each individual step the agent planned, every tool call it made (such as file edits, terminal commands, or API calls), and any errors or permission failures it encountered. Reviewing this trace directly reveals the exact step at which execution halted and the associated error or unexpected condition that caused the failure.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "The branch protection rules configured on the repository, which specify the required status checks that must pass before a pull request can be merged.",
+        "explanation": "This answer is incorrect. Branch protection rules define merge requirements and would not explain why the agent failed to open a pull request in the first place. These rules apply at merge time, not during the agent's task execution phase, so they are not a diagnostic artifact for agent execution failures.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "The GitHub Actions workflow run logs for the repository's CI pipeline, which show whether automated tests passed or failed on the agent's branch.",
+        "explanation": "This answer is incorrect. GitHub Actions workflow logs reflect the CI pipeline's behavior on the agent's branch, not the agent's own execution steps. While useful for understanding test results, they would not show why the agent itself stopped before opening a pull request, especially if the agent never reached the point of triggering CI.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 5,
+    "domainCode": "DOM-4",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A developer assigns a GitHub Copilot cloud agent to implement a new feature by creating an issue with detailed acceptance criteria. After the agent opens a pull request and completes several commits, the developer reviews the pull request and notices that the agent's recent changes no longer align with two of the original acceptance criteria — the implementation has drifted from the specified requirements. The agent session is still active. What is the MOST effective way to correct this context drift?",
+    "explanation": "When a GitHub Copilot cloud agent exhibits context drift during an active session, the recommended intervention is to communicate corrective guidance through the pull request the agent is working on. Because the agent monitors its own pull request for feedback, posting a targeted comment that references the original requirements allows the agent to course-correct while preserving the valid work it has already completed. This approach leverages the agent's built-in feedback loop rather than discarding progress or making unguided manual changes.\n\nA: This answer is incorrect. The agent's active context is anchored to the pull request thread and its current working state, not to re-reading the original issue mid-session. Editing the issue description after the agent has already opened a pull request is unlikely to influence the agent's ongoing behavior.\nB: This answer is incorrect. Closing the pull request and restarting from scratch discards all valid work already completed by the agent and is unnecessarily disruptive. When drift is detected mid-session, the preferred approach is to guide the active session rather than abandon it entirely.\nC: This answer is correct. The GitHub Copilot cloud agent monitors the pull request it has opened, including comments left by reviewers. Adding a comment that specifically identifies which acceptance criteria have been missed gives the agent actionable, in-context guidance to realign its remaining work without losing progress already made.\nD: This answer is incorrect. Manually amending the agent's commit without providing any instruction leaves the agent without guidance on what went wrong or what the correct behavior should be. The agent is likely to continue drifting in the same direction without explicit corrective feedback.",
+    "overallExplanation": "When a GitHub Copilot cloud agent exhibits context drift during an active session, the recommended intervention is to communicate corrective guidance through the pull request the agent is working on. Because the agent monitors its own pull request for feedback, posting a targeted comment that references the original requirements allows the agent to course-correct while preserving the valid work it has already completed. This approach leverages the agent's built-in feedback loop rather than discarding progress or making unguided manual changes.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Edit the original issue description to restate the drifted acceptance criteria more explicitly, which will cause the agent to re-read the issue and self-correct on its next commit.",
+        "explanation": "This answer is incorrect. The agent's active context is anchored to the pull request thread and its current working state, not to re-reading the original issue mid-session. Editing the issue description after the agent has already opened a pull request is unlikely to influence the agent's ongoing behavior.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Close the pull request, delete the branch, and reassign the original issue to the agent so it can restart the implementation from scratch with the full context intact.",
+        "explanation": "This answer is incorrect. Closing the pull request and restarting from scratch discards all valid work already completed by the agent and is unnecessarily disruptive. When drift is detected mid-session, the preferred approach is to guide the active session rather than abandon it entirely.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Add a comment to the open pull request describing the specific acceptance criteria the agent has drifted from, so the agent can incorporate that feedback and realign its subsequent work.",
+        "explanation": "This answer is correct. The GitHub Copilot cloud agent monitors the pull request it has opened, including comments left by reviewers. Adding a comment that specifically identifies which acceptance criteria have been missed gives the agent actionable, in-context guidance to realign its remaining work without losing progress already made.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "Manually amend the agent's most recent commit to revert the drifted changes, then allow the agent to continue from the corrected state without any additional instruction.",
+        "explanation": "This answer is incorrect. Manually amending the agent's commit without providing any instruction leaves the agent without guidance on what went wrong or what the correct behavior should be. The agent is likely to continue drifting in the same direction without explicit corrective feedback.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 6,
+    "domainCode": "DOM-5",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A platform team maintains a multi-agent GitHub Actions workflow that uses a long-running orchestrator job to dispatch tasks to several specialized worker agents defined as reusable workflows. One worker agent's reusable workflow needs updated tool permissions (via its permissions block) and new environment variable defaults. Future workflow runs should use the updated worker agent configuration, but the team does not want to disrupt any currently executing workflow runs. What is the correct approach?",
+    "explanation": "In GitHub Actions, workflow run definitions—including all referenced reusable workflows and their permissions blocks—are resolved and locked at the time the run is triggered. The correct strategy for updating a worker agent's configuration without disrupting active runs is to commit the changes to the appropriate branch; running workflows are isolated from those changes and complete with their original definitions, while new runs automatically inherit the updated configuration. This immutability of in-progress runs is a fundamental GitHub Actions lifecycle property that enables safe, non-disruptive agent reconfiguration.\n\nA: This answer is incorrect. While repository environments can store environment variables consumed by jobs, restarting a single job within an active workflow run does not allow that job to adopt a different permissions block, because permissions are part of the static job definition resolved at run start. Additionally, GitHub Actions does not support restarting an individual non-failed job in isolation within a live run to pick up new permission scopes.\nB: This answer is incorrect. Pinning the reusable workflow reference to a SHA before making changes is a valid versioning practice, but manually re-running worker jobs within the current workflow run does not cause them to adopt the new reusable workflow version—re-run jobs still use the workflow definition from the original run's trigger commit. The updated configuration would only take effect in a newly triggered workflow run.\nC: This answer is correct. In GitHub Actions, a workflow run's job definitions—including referenced reusable workflows—are resolved at trigger time and remain fixed for the lifetime of that run. Committing the updated reusable workflow to the default branch ensures that any currently running workflow runs are unaffected (they continue with the previously resolved version), while all subsequent workflow runs will automatically pick up the new permissions block and environment variable defaults.\nD: This answer is incorrect. The GitHub Actions REST API does not support dynamically patching the permissions block or environment variable defaults of a job that is already executing; job definitions are immutable once a workflow run has started. There is no mechanism to push mid-run configuration changes to a running worker agent's permissions.",
+    "overallExplanation": "In GitHub Actions, workflow run definitions—including all referenced reusable workflows and their permissions blocks—are resolved and locked at the time the run is triggered. The correct strategy for updating a worker agent's configuration without disrupting active runs is to commit the changes to the appropriate branch; running workflows are isolated from those changes and complete with their original definitions, while new runs automatically inherit the updated configuration. This immutability of in-progress runs is a fundamental GitHub Actions lifecycle property that enables safe, non-disruptive agent reconfiguration.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a new repository environment scoped to the worker agent's job and store the updated values there, then restart only the worker agent's job within the current workflow run so it re-reads the environment without affecting the orchestrator or other worker jobs.",
+        "explanation": "This answer is incorrect. While repository environments can store environment variables consumed by jobs, restarting a single job within an active workflow run does not allow that job to adopt a different permissions block, because permissions are part of the static job definition resolved at run start. Additionally, GitHub Actions does not support restarting an individual non-failed job in isolation within a live run to pick up new permission scopes.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Pin the reusable workflow reference in the orchestrator to a specific SHA before making any changes, push the updated reusable workflow to main, then manually re-run only the failed or pending worker jobs in the current workflow run to apply the new configuration immediately.",
+        "explanation": "This answer is incorrect. Pinning the reusable workflow reference to a SHA before making changes is a valid versioning practice, but manually re-running worker jobs within the current workflow run does not cause them to adopt the new reusable workflow version—re-run jobs still use the workflow definition from the original run's trigger commit. The updated configuration would only take effect in a newly triggered workflow run.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Commit the updated reusable workflow file (with the revised permissions block and environment variables) to the main branch. Currently running workflow runs will continue using the version of the reusable workflow that was resolved at the time they were triggered, while new workflow runs will automatically use the updated configuration.",
+        "explanation": "This answer is correct. In GitHub Actions, a workflow run's job definitions—including referenced reusable workflows—are resolved at trigger time and remain fixed for the lifetime of that run. Committing the updated reusable workflow to the default branch ensures that any currently running workflow runs are unaffected (they continue with the previously resolved version), while all subsequent workflow runs will automatically pick up the new permissions block and environment variable defaults.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "Use the GitHub Actions REST API to patch the environment variables of the in-progress workflow run, then push the updated permissions block in a separate commit so the running worker agent picks up both changes dynamically.",
+        "explanation": "This answer is incorrect. The GitHub Actions REST API does not support dynamically patching the permissions block or environment variable defaults of a job that is already executing; job definitions are immutable once a workflow run has started. There is no mechanism to push mid-run configuration changes to a running worker agent's permissions.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 7,
+    "domainCode": "DOM-4",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team has integrated the GitHub Copilot cloud agent into their SDLC to autonomously resolve issues and open pull requests. After several weeks, the team notices that the agent frequently makes broad, sweeping changes across multiple unrelated modules in a single pull request, and reviewers are struggling to assess the scope of each change. The agent also occasionally modifies infrastructure configuration files outside its intended scope. Which combination of mitigations best addresses these anti-patterns?",
+    "explanation": "Oversized, unfocused pull requests usually trace back to unfocused tasks, so the first correction belongs upstream in how the work is described to the agent. The second correction is path-scoped enforcement: CODEOWNERS maps sensitive directories to the teams accountable for them, and requiring code owner review in a ruleset turns that mapping into a merge condition evaluated against the files a pull request actually touches. Broadening the agent's permissions moves in the opposite direction and enlarges the blast radius the team is trying to shrink. Security scanning finds vulnerable or leaked material but says nothing about whether a change was in scope.\n\nA: This answer is incorrect. GitHub Advanced Security provides secret scanning, code scanning, and dependency review capabilities, which are valuable security controls but are not designed to restrict an agent's operational scope or prevent it from making changes to unrelated modules. These tools address security vulnerabilities in code rather than governance of agent behavior.\nB: This answer is incorrect. Disabling the GitHub Copilot cloud agent entirely is an extreme response that eliminates the productivity benefits of agent integration rather than addressing the root cause of the anti-patterns. The correct approach is to apply guardrails and improve task scoping, not to abandon agent usage altogether.\nC: This answer is incorrect. Expanding the agent's GITHUB_TOKEN permissions increases the blast radius of unintended changes rather than constraining them, which directly worsens the anti-pattern of out-of-scope modifications. Least-privilege access is a fundamental principle when integrating agents into the SDLC to prevent uncontrolled autonomous actions.\nD: This answer is correct. Narrow issues remove the ambiguity that invites the agent to expand its changes, addressing the cause rather than the symptom. Mapping the sensitive configuration paths to their owning team in CODEOWNERS and requiring code owner review in a ruleset means any edit that strays into those paths stops for the people accountable for them.",
+    "overallExplanation": "Oversized, unfocused pull requests usually trace back to unfocused tasks, so the first correction belongs upstream in how the work is described to the agent. The second correction is path-scoped enforcement: CODEOWNERS maps sensitive directories to the teams accountable for them, and requiring code owner review in a ruleset turns that mapping into a merge condition evaluated against the files a pull request actually touches. Broadening the agent's permissions moves in the opposite direction and enlarges the blast radius the team is trying to shrink. Security scanning finds vulnerable or leaked material but says nothing about whether a change was in scope.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Enable GitHub Advanced Security on the repository so that secret scanning and dependency review alerts automatically prevent the agent from making out-of-scope changes.",
+        "explanation": "This answer is incorrect. GitHub Advanced Security provides secret scanning, code scanning, and dependency review capabilities, which are valuable security controls but are not designed to restrict an agent's operational scope or prevent it from making changes to unrelated modules. These tools address security vulnerabilities in code rather than governance of agent behavior.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Disable the GitHub Copilot cloud agent entirely and revert to manual development, since autonomous agents are not suitable for repositories with complex codebases.",
+        "explanation": "This answer is incorrect. Disabling the GitHub Copilot cloud agent entirely is an extreme response that eliminates the productivity benefits of agent integration rather than addressing the root cause of the anti-patterns. The correct approach is to apply guardrails and improve task scoping, not to abandon agent usage altogether.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Grant the agent a broader GITHUB_TOKEN with write access to all repository resources so it can self-correct its mistakes without human intervention, reducing reviewer burden.",
+        "explanation": "This answer is incorrect. Expanding the agent's GITHUB_TOKEN permissions increases the blast radius of unintended changes rather than constraining them, which directly worsens the anti-pattern of out-of-scope modifications. Least-privilege access is a fundamental principle when integrating agents into the SDLC to prevent uncontrolled autonomous actions.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Write narrowly scoped issues so each task has clear boundaries, and protect the infrastructure configuration paths with CODEOWNERS entries plus a ruleset requiring code owner review, so out-of-scope edits cannot merge without the owning team.",
+        "explanation": "This answer is correct. Narrow issues remove the ambiguity that invites the agent to expand its changes, addressing the cause rather than the symptom. Mapping the sensitive configuration paths to their owning team in CODEOWNERS and requiring code owner review in a ruleset means any edit that strays into those paths stops for the people accountable for them.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 8,
+    "domainCode": "DOM-4",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team has deployed a GitHub Copilot cloud agent to automate routine pull request tasks. After reviewing evaluation results, the team notices that the agent frequently attempts to push directly to protected branches and calls a web search tool unnecessarily when resolving straightforward dependency update issues — adding latency and producing irrelevant results. The agent has access to five tools: create_pull_request, search_web, read_file, write_file, and push_to_branch. Which action should the team take to best address both problems identified in the evaluation results?",
+    "explanation": "When evaluation results reveal that a cloud agent is misusing or overusing specific tools, the correct remediation is to refine tool access by removing tools the agent should not have and to constrain tool usage by scoping when particular tools may be invoked. Adjusting unrelated permissions leaves the observed behavior unchanged, and abandoning the agent discards value the evaluation did not call into question. Applying both levers together addresses each of the problems the evaluation surfaced. Refining tool usage and tool access in response to measured behavior is the core tuning loop for an autonomous agent.\n\nA: This answer is incorrect. Replacing push_to_branch with a stricter GITHUB_TOKEN scope addresses permissions at the authentication layer but does not remove the tool from the agent's available actions, meaning the agent will still attempt to call it and encounter failures. Instructing the agent to call search_web before every task is the opposite of what the evaluation results indicate — it would increase unnecessary web searches rather than reducing them.\nB: This answer is incorrect. Disabling the agent entirely is a disproportionate response that eliminates all value the agent provides rather than addressing the two specific, well-defined issues identified in the evaluation. The evaluation results provide actionable signal to refine tool access and usage, which is the intended corrective path for tuning agent behavior.\nC: This answer is correct. Removing push_to_branch from the agent's available tool list directly addresses the evaluation finding that the agent was inappropriately attempting direct pushes to protected branches — eliminating the problematic action at the tool access level. Restricting search_web to only the sub-tasks where external lookup is genuinely needed refines tool usage based on the evaluation evidence, reducing unnecessary latency without removing a potentially useful capability entirely. Together, these changes represent the principle of tuning agent behavior by adjusting tool access and tool usage scope based on observed outcomes.\nD: This answer is incorrect. Adding branch protection rules is a repository-level safeguard, not a targeted agent behavior refinement — it does not remove the tool from the agent's repertoire or prevent the agent from attempting the action. Granting broader write access via a fine-grained personal access token would actually expand permissions rather than restrict the problematic behavior, directly contradicting the evaluation findings.",
+    "overallExplanation": "When evaluation results reveal that a cloud agent is misusing or overusing specific tools, the correct remediation is to refine tool access by removing tools the agent should not have and to constrain tool usage by scoping when particular tools may be invoked. Adjusting unrelated permissions leaves the observed behavior unchanged, and abandoning the agent discards value the evaluation did not call into question. Applying both levers together addresses each of the problems the evaluation surfaced. Refining tool usage and tool access in response to measured behavior is the core tuning loop for an autonomous agent.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Replace the push_to_branch tool with a stricter GITHUB_TOKEN scope and instruct the agent to call search_web before every task to ensure it has the latest context.",
+        "explanation": "This answer is incorrect. Replacing push_to_branch with a stricter GITHUB_TOKEN scope addresses permissions at the authentication layer but does not remove the tool from the agent's available actions, meaning the agent will still attempt to call it and encounter failures. Instructing the agent to call search_web before every task is the opposite of what the evaluation results indicate — it would increase unnecessary web searches rather than reducing them.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Disable the GitHub Copilot cloud agent entirely and revert to manual pull request workflows until a more suitable toolset can be identified.",
+        "explanation": "This answer is incorrect. Disabling the agent entirely is a disproportionate response that eliminates all value the agent provides rather than addressing the two specific, well-defined issues identified in the evaluation. The evaluation results provide actionable signal to refine tool access and usage, which is the intended corrective path for tuning agent behavior.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Remove push_to_branch from the agent's available tools and restrict search_web usage to a specific sub-task where external lookup is explicitly required.",
+        "explanation": "This answer is correct. Removing push_to_branch from the agent's available tool list directly addresses the evaluation finding that the agent was inappropriately attempting direct pushes to protected branches — eliminating the problematic action at the tool access level. Restricting search_web to only the sub-tasks where external lookup is genuinely needed refines tool usage based on the evaluation evidence, reducing unnecessary latency without removing a potentially useful capability entirely. Together, these changes represent the principle of tuning agent behavior by adjusting tool access and tool usage scope based on observed outcomes.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "Add branch protection rules to the repository and increase the agent's token permissions using a fine-grained personal access token with broader write access.",
+        "explanation": "This answer is incorrect. Adding branch protection rules is a repository-level safeguard, not a targeted agent behavior refinement — it does not remove the tool from the agent's repertoire or prevent the agent from attempting the action. Granting broader write access via a fine-grained personal access token would actually expand permissions rather than restrict the problematic behavior, directly contradicting the evaluation findings.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 9,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team wants to configure the GitHub Copilot cloud agent so that it can only operate within a single internal repository called payments-service, preventing it from accessing or modifying any other repositories in the organization. Which approach correctly scopes the agent's access to only that repository?",
+    "explanation": "The cloud agent's access is bounded by the repository in which it was assigned work, so it cannot read or modify other repositories even when it is enabled broadly. Restricting where the agent may be used at all is a Copilot settings decision at the repository and organization level rather than something expressed through tokens, branch rules, or environments. Enabling it for the one repository that needs it and leaving it off elsewhere satisfies the requirement with a control that administrators can audit in one place. Branch protection governs merges, and environments govern deployments, so neither expresses which repositories an agent may operate in.\n\nA: This answer is correct. Availability of the agent is controlled through Copilot settings at the repository and organization level, so enabling it only for payments-service keeps it out of the other repositories. The agent's own access boundary reinforces this, because a session can only read and write the repository in which it was assigned work.\nB: This answer is incorrect. GitHub Actions repository environments with deployment branch policies control which branches can trigger deployments to a specific environment; they do not scope or restrict the GitHub Copilot cloud agent's access to a particular repository. These are separate GitHub features serving different purposes.\nC: This answer is incorrect. Branch protection rules govern who can push to specific branches within a repository; they are not a mechanism for restricting which repositories an agent can access or operate in. Enabling the agent at the organization level and relying on branch protection rules would not prevent the agent from being invoked in other repositories.\nD: This answer is incorrect. The cloud agent does not authenticate with a supplied personal access token; it uses its own constrained credentials scoped to the repository where it is working. Creating a fine-grained token neither configures nor narrows the agent's scope.",
+    "overallExplanation": "The cloud agent's access is bounded by the repository in which it was assigned work, so it cannot read or modify other repositories even when it is enabled broadly. Restricting where the agent may be used at all is a Copilot settings decision at the repository and organization level rather than something expressed through tokens, branch rules, or environments. Enabling it for the one repository that needs it and leaving it off elsewhere satisfies the requirement with a control that administrators can audit in one place. Branch protection governs merges, and environments govern deployments, so neither expresses which repositories an agent may operate in.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Manage the agent's availability through Copilot settings for that repository, enabling it for payments-service and leaving it disabled elsewhere; a session is in any case confined to the repository where the work was assigned and cannot reach other repositories.",
+        "explanation": "This answer is correct. Availability of the agent is controlled through Copilot settings at the repository and organization level, so enabling it only for payments-service keeps it out of the other repositories. The agent's own access boundary reinforces this, because a session can only read and write the repository in which it was assigned work.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Add the GitHub Copilot cloud agent to a GitHub Actions environment named payments-service and set the environment's deployment branch policy to restrict it to the main branch.",
+        "explanation": "This answer is incorrect. GitHub Actions repository environments with deployment branch policies control which branches can trigger deployments to a specific environment; they do not scope or restrict the GitHub Copilot cloud agent's access to a particular repository. These are separate GitHub features serving different purposes.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Enable the GitHub Copilot cloud agent at the organization level and then use branch protection rules on payments-service to block the agent from pushing to any other repository.",
+        "explanation": "This answer is incorrect. Branch protection rules govern who can push to specific branches within a repository; they are not a mechanism for restricting which repositories an agent can access or operate in. Enabling the agent at the organization level and relying on branch protection rules would not prevent the agent from being invoked in other repositories.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Create a fine-grained personal access token scoped to the payments-service repository and use that token when configuring the agent's credentials, granting it permissions only to that repository.",
+        "explanation": "This answer is incorrect. The cloud agent does not authenticate with a supplied personal access token; it uses its own constrained credentials scoped to the repository where it is working. Creating a fine-grained token neither configures nor narrows the agent's scope.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 10,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A platform engineering team wants to ensure the GitHub Copilot cloud agent can only use MCP servers that their security team has explicitly reviewed and approved, and that no unreviewed server can be used anywhere in the organization. Which configuration approach should the team use to enforce this restriction?",
+    "explanation": "Deciding which MCP servers are permitted at all is an organization-wide policy question, and the MCP allow list in Copilot policy settings is the control designed for it, so unreviewed servers cannot be introduced by an individual repository. A second, narrower control operates inside a permitted server: repository and custom agent configurations can expose only selected tools from a server that policy already allows. Together they answer two different questions, which servers are trusted and which of a trusted server's tools may be called. Branch protection, environments, and token scopes govern branches, deployments, and API access and have no bearing on either question.\n\nA: This answer is incorrect. Repository environments and deployment protection rules control when workflows may deploy and which secrets they can reach, not which MCP servers an agent may use. This configuration is unrelated to MCP access control.\nB: This answer is correct. An organization-level MCP allow list is the purpose-built control for deciding which MCP servers may be used, and it is enforced centrally rather than by each repository. Servers absent from the list are unavailable regardless of what an individual repository configuration requests.\nC: This answer is incorrect. Fine-grained personal access tokens scope access to GitHub API resources and cannot express which MCP servers an agent may connect to. Token scoping addresses API authorization rather than server allow-listing.\nD: This answer is incorrect. Branch protection rules govern merging and pushing on specific branches and have no relationship to which MCP servers an agent may use. They provide no mechanism for expressing an approved-server list.",
+    "overallExplanation": "Deciding which MCP servers are permitted at all is an organization-wide policy question, and the MCP allow list in Copilot policy settings is the control designed for it, so unreviewed servers cannot be introduced by an individual repository. A second, narrower control operates inside a permitted server: repository and custom agent configurations can expose only selected tools from a server that policy already allows. Together they answer two different questions, which servers are trusted and which of a trusted server's tools may be called. Branch protection, environments, and token scopes govern branches, deployments, and API access and have no bearing on either question.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Define a repository environment with deployment protection rules that reference the approved MCP servers, restricting the GitHub Copilot cloud agent to only those servers.",
+        "explanation": "This answer is incorrect. Repository environments and deployment protection rules control when workflows may deploy and which secrets they can reach, not which MCP servers an agent may use. This configuration is unrelated to MCP access control.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Configure the MCP allow list in the organization's Copilot policy settings, listing only the servers the security team has approved so the agent cannot use any server that has not been reviewed.",
+        "explanation": "This answer is correct. An organization-level MCP allow list is the purpose-built control for deciding which MCP servers may be used, and it is enforced centrally rather than by each repository. Servers absent from the list are unavailable regardless of what an individual repository configuration requests.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Create a fine-grained personal access token scoped to the approved MCP servers, and configure the GitHub Copilot cloud agent to authenticate using only that token when connecting to MCP servers.",
+        "explanation": "This answer is incorrect. Fine-grained personal access tokens scope access to GitHub API resources and cannot express which MCP servers an agent may connect to. Token scoping addresses API authorization rather than server allow-listing.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Create a branch protection rule on the default branch that lists the approved MCP servers, preventing the GitHub Copilot cloud agent from using any server not specified in the rule.",
+        "explanation": "This answer is incorrect. Branch protection rules govern merging and pushing on specific branches and have no relationship to which MCP servers an agent may use. They provide no mechanism for expressing an approved-server list.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 11,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team wants to use the GitHub Copilot cloud agent to autonomously resolve a GitHub Issue that requires reading files from the repository, running the test suite to validate changes, and creating a pull request with the fixes. Which combination of tools must be configured to enable the cloud agent to complete this end-to-end workflow?",
+    "explanation": "The GitHub Copilot cloud agent operates by using GitHub Actions as its execution environment, relying on the GITHUB_TOKEN for authenticated repository operations, and requiring appropriate permissions to create pull requests as its output artifact. When identifying required tools for an agent workflow, practitioners must map each step of the task (read, execute, write) to a specific tool or permission, ensuring the agent has everything it needs without unnecessary or incorrect components.\n\nA: This answer is incorrect. While the GitHub MCP Server and MCP registry can extend Copilot agent capabilities, they are not the core tools required for the specific workflow described. Copilot code review assists with reviewing pull requests after they are created and is not part of the agent's execution toolchain. A deployment workflow is also unrelated to the stated goal of reading files, running tests, and creating a pull request.\nB: This answer is incorrect. GitHub Advanced Security provides code scanning, secret scanning, and dependency review, but it is not a tool the cloud agent uses to read files or run tests. A GitHub MCP Server connection and Copilot code review are also not required for the described workflow and do not address the need to execute a test suite or create a pull request autonomously.\nC: This answer is correct. The GitHub Copilot cloud agent requires GITHUB_TOKEN-based repository read/write access to read and modify files, a GitHub Actions runner to execute tasks such as running the test suite in an isolated environment, and pull request creation permissions so the agent can open a PR with its proposed changes. These three components directly map to the three stated requirements: reading files, running tests, and creating a pull request.\nD: This answer is incorrect. A read-only fine-grained personal access token would prevent the cloud agent from writing changes back to the repository or creating a pull request, which are explicit requirements. GitHub Codespaces is a cloud development environment for human developers, not the execution environment used by the cloud agent, which relies on GitHub Actions runners. Additionally, disabling branch protection rules is not a required configuration step for the agent's tooling.",
+    "overallExplanation": "The GitHub Copilot cloud agent operates by using GitHub Actions as its execution environment, relying on the GITHUB_TOKEN for authenticated repository operations, and requiring appropriate permissions to create pull requests as its output artifact. When identifying required tools for an agent workflow, practitioners must map each step of the task (read, execute, write) to a specific tool or permission, ensuring the agent has everything it needs without unnecessary or incorrect components.",
+    "options": [
+      {
+        "key": "A",
+        "text": "GitHub MCP Server tools registered in the MCP registry, Copilot code review configured on the repository, and a GitHub Actions workflow for automated deployments",
+        "explanation": "This answer is incorrect. While the GitHub MCP Server and MCP registry can extend Copilot agent capabilities, they are not the core tools required for the specific workflow described. Copilot code review assists with reviewing pull requests after they are created and is not part of the agent's execution toolchain. A deployment workflow is also unrelated to the stated goal of reading files, running tests, and creating a pull request.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "GitHub Advanced Security scanning, a GitHub MCP Server connection, and Copilot code review enabled on the repository",
+        "explanation": "This answer is incorrect. GitHub Advanced Security provides code scanning, secret scanning, and dependency review, but it is not a tool the cloud agent uses to read files or run tests. A GitHub MCP Server connection and Copilot code review are also not required for the described workflow and do not address the need to execute a test suite or create a pull request autonomously.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Repository read/write access via the GITHUB_TOKEN, a GitHub Actions runner to execute the test suite, and pull request creation permissions scoped to the repository",
+        "explanation": "This answer is correct. The GitHub Copilot cloud agent requires GITHUB_TOKEN-based repository read/write access to read and modify files, a GitHub Actions runner to execute tasks such as running the test suite in an isolated environment, and pull request creation permissions so the agent can open a PR with its proposed changes. These three components directly map to the three stated requirements: reading files, running tests, and creating a pull request.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "A fine-grained personal access token with read-only repository scope, GitHub Codespaces for test execution, and branch protection rules disabled on the default branch",
+        "explanation": "This answer is incorrect. A read-only fine-grained personal access token would prevent the cloud agent from writing changes back to the repository or creating a pull request, which are explicit requirements. GitHub Codespaces is a cloud development environment for human developers, not the execution environment used by the cloud agent, which relies on GitHub Actions runners. Additionally, disabling branch protection rules is not a required configuration step for the agent's tooling.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 12,
+    "domainCode": "DOM-6",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team wants to configure the GitHub Copilot cloud agent so that it only operates on feature branches and is prevented from making direct commits to the main branch. Which configuration approach should the team implement to enforce this branch-based scope for the agent?",
+    "explanation": "Branch protection rules are the standard GitHub mechanism for enforcing branch-based scope when integrating the GitHub Copilot cloud agent into a development environment. By requiring pull requests before merging on main, administrators ensure the agent can only commit directly to feature branches and must go through a review process to affect protected branches. This approach leverages built-in repository governance rather than workarounds, making it the most reliable and maintainable configuration.\n\nA: This answer is incorrect. Repository environments are used to control deployment targets and can gate GitHub Actions jobs, but they do not directly configure the Copilot cloud agent's branch-based scope. Setting GITHUB_TOKEN to read-only across branches would break the agent's ability to function on feature branches rather than scoping it appropriately.\nB: This answer is correct. Branch protection rules on main that require pull requests before merging directly enforce branch-based scope for the GitHub Copilot cloud agent. Because the agent cannot bypass these rules, it is constrained to working on feature branches and must open a pull request to propose changes to main, which is the intended branch-scoped behavior.\nC: This answer is incorrect. Fine-grained personal access tokens can restrict repository access but are not designed to scope an agent to specific branches within a repository. Branch protection rules are the correct GitHub-native mechanism for enforcing which branches can receive direct commits versus requiring pull requests.\nD: This answer is incorrect. Canceling GitHub Actions workflow runs after the fact does not prevent the Copilot cloud agent from attempting commits to main; it is a reactive measure rather than a proactive branch-based scope configuration. Branch protection rules are the proper mechanism to restrict which branches an agent can directly modify.",
+    "overallExplanation": "Branch protection rules are the standard GitHub mechanism for enforcing branch-based scope when integrating the GitHub Copilot cloud agent into a development environment. By requiring pull requests before merging on main, administrators ensure the agent can only commit directly to feature branches and must go through a review process to affect protected branches. This approach leverages built-in repository governance rather than workarounds, making it the most reliable and maintainable configuration.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Configure a repository environment named production and assign it exclusively to the main branch, then restrict the GITHUB_TOKEN permissions to read-only for all other branches.",
+        "explanation": "This answer is incorrect. Repository environments are used to control deployment targets and can gate GitHub Actions jobs, but they do not directly configure the Copilot cloud agent's branch-based scope. Setting GITHUB_TOKEN to read-only across branches would break the agent's ability to function on feature branches rather than scoping it appropriately.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Enable branch protection rules on the main branch to require pull requests before merging, ensuring the Copilot cloud agent can only push changes to feature branches and must submit a pull request to affect main.",
+        "explanation": "This answer is correct. Branch protection rules on main that require pull requests before merging directly enforce branch-based scope for the GitHub Copilot cloud agent. Because the agent cannot bypass these rules, it is constrained to working on feature branches and must open a pull request to propose changes to main, which is the intended branch-scoped behavior.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Create a fine-grained personal access token scoped to a specific feature branch and supply it as the agent's authentication credential, revoking all other tokens.",
+        "explanation": "This answer is incorrect. Fine-grained personal access tokens can restrict repository access but are not designed to scope an agent to specific branches within a repository. Branch protection rules are the correct GitHub-native mechanism for enforcing which branches can receive direct commits versus requiring pull requests.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Create a GitHub Actions workflow that triggers on push events to main and includes a step that cancels any Copilot cloud agent jobs targeting that branch.",
+        "explanation": "This answer is incorrect. Canceling GitHub Actions workflow runs after the fact does not prevent the Copilot cloud agent from attempting commits to main; it is a reactive measure rather than a proactive branch-based scope configuration. Branch protection rules are the proper mechanism to restrict which branches an agent can directly modify.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 13,
+    "domainCode": "DOM-3",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A team is using the GitHub Copilot cloud agent to refactor a large legacy codebase across multiple sessions. Midway through the work, the agent loses context about which modules have already been refactored, which decisions were made about naming conventions, and which edge cases were deferred for later. To prevent this context drift from recurring in future sessions, which approach best ensures the agent can resume work accurately without re-deriving prior decisions?",
+    "explanation": "Managing context drift in multi-session agentic workflows requires capturing decisions, progress, and deferred work as durable artifacts—typically structured files committed to the repository—rather than relying on in-memory state or indirect tooling. By writing and committing markdown-based progress logs and decision records to the working branch, the GitHub Copilot cloud agent has a reliable, version-controlled source of truth it can reference at the start of each new session, ensuring continuity and accuracy across long-running tasks.\n\nA: This answer is incorrect. Copilot code review is designed to provide feedback on code quality and correctness within a pull request, not to reconstruct or relay an agent's prior architectural decisions to a future session. It does not produce durable state artifacts that the cloud agent can consume as structured context in subsequent sessions.\nB: This answer is correct. Committing structured markdown artifacts—such as progress notes, decision logs, and task checklists—directly to the working branch creates durable, version-controlled records that the GitHub Copilot cloud agent can read at the start of each new session. This approach explicitly captures task progress and decisions as artifacts, allowing the agent to resume accurately without re-deriving context, which is the core practice for managing context drift.\nC: This answer is incorrect. Branch protection rules are a repository governance mechanism that controls merge permissions and does not address context drift between agent sessions. Forcing work into a single session is impractical for large refactoring tasks and does not create any durable artifact that captures decisions or progress.\nD: This answer is incorrect. Model selection and context window size are runtime memory concerns, not durable state management strategies. Even with a larger context window, in-memory state is lost when a session ends, so this approach does not provide persistent artifacts that survive across multiple agent sessions.",
+    "overallExplanation": "Managing context drift in multi-session agentic workflows requires capturing decisions, progress, and deferred work as durable artifacts—typically structured files committed to the repository—rather than relying on in-memory state or indirect tooling. By writing and committing markdown-based progress logs and decision records to the working branch, the GitHub Copilot cloud agent has a reliable, version-controlled source of truth it can reference at the start of each new session, ensuring continuity and accuracy across long-running tasks.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Enable Copilot code review on each pull request so that the AI reviewer can reconstruct the agent's prior decisions from the diff history before the next session begins.",
+        "explanation": "This answer is incorrect. Copilot code review is designed to provide feedback on code quality and correctness within a pull request, not to reconstruct or relay an agent's prior architectural decisions to a future session. It does not produce durable state artifacts that the cloud agent can consume as structured context in subsequent sessions.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Have the agent write structured progress notes, decision logs, and a task checklist into a dedicated markdown file committed to the repository branch after each meaningful work increment.",
+        "explanation": "This answer is correct. Committing structured markdown artifacts—such as progress notes, decision logs, and task checklists—directly to the working branch creates durable, version-controlled records that the GitHub Copilot cloud agent can read at the start of each new session. This approach explicitly captures task progress and decisions as artifacts, allowing the agent to resume accurately without re-deriving context, which is the core practice for managing context drift.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Configure branch protection rules to block merges until all refactoring tasks are complete, so the agent is forced to finish all work within a single uninterrupted session.",
+        "explanation": "This answer is incorrect. Branch protection rules are a repository governance mechanism that controls merge permissions and does not address context drift between agent sessions. Forcing work into a single session is impractical for large refactoring tasks and does not create any durable artifact that captures decisions or progress.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Increase the agent's token context window by switching to a larger model in GitHub Copilot settings, so the agent can hold more history in memory across sessions.",
+        "explanation": "This answer is incorrect. Model selection and context window size are runtime memory concerns, not durable state management strategies. Even with a larger context window, in-memory state is lost when a session ends, so this approach does not provide persistent artifacts that survive across multiple agent sessions.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 14,
+    "domainCode": "DOM-1",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A platform engineering team is configuring the GitHub Copilot cloud agent to autonomously implement security fixes across multiple repositories. To define clear success criteria, the team wants the agent's pull requests to be automatically evaluated for introduced vulnerabilities before merging. Which approach best generates automated evaluation signals to validate the agent's output meets security standards?",
+    "explanation": "When defining success criteria for GitHub Copilot cloud agent tasks, automated evaluation signals should be generated by integrating tools like GitHub Advanced Security code scanning into branch protection rules, so that every agent-produced pull request is objectively and automatically assessed against security standards. This approach enforces measurable, consistent success criteria — no new vulnerabilities introduced — without relying on human review or the agent's self-reporting. Automated scanning tools provide the independent, scalable signal needed to validate agent output quality in production workflows.\n\nA: This answer is incorrect. While Copilot code review provides AI-assisted feedback on pull requests, it generates qualitative suggestions rather than definitive pass/fail evaluation signals tied to automated scanning. It does not enforce security standards as a blocking gate the way GitHub Advanced Security code scanning integrated with branch protection rules does.\nB: This answer is incorrect. Requiring a human security engineer to review every pull request introduces a manual gate rather than an automated evaluation signal. While human review is valuable, it does not scale for autonomous agent workflows and does not constitute the automated scanning-based success signal the question specifies.\nC: This answer is correct. Configuring branch protection rules to require GitHub Advanced Security code scanning checks means that every pull request opened by the cloud agent is automatically scanned for vulnerabilities, and the merge is blocked if new alerts are introduced. This provides an objective, automated evaluation signal that directly measures whether the agent's output meets the defined security success criteria without requiring human intervention for each PR.\nD: This answer is incorrect. A self-assessment checklist written by the cloud agent itself is not an independent evaluation signal — it relies on the agent accurately reporting its own work, which cannot be verified automatically. Automated scanning tools must be external to the agent to provide reliable, objective success criteria validation.",
+    "overallExplanation": "When defining success criteria for GitHub Copilot cloud agent tasks, automated evaluation signals should be generated by integrating tools like GitHub Advanced Security code scanning into branch protection rules, so that every agent-produced pull request is objectively and automatically assessed against security standards. This approach enforces measurable, consistent success criteria — no new vulnerabilities introduced — without relying on human review or the agent's self-reporting. Automated scanning tools provide the independent, scalable signal needed to validate agent output quality in production workflows.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Enable Copilot code review on the repository so that the cloud agent's pull requests receive AI-assisted review comments that flag potential issues before merging.",
+        "explanation": "This answer is incorrect. While Copilot code review provides AI-assisted feedback on pull requests, it generates qualitative suggestions rather than definitive pass/fail evaluation signals tied to automated scanning. It does not enforce security standards as a blocking gate the way GitHub Advanced Security code scanning integrated with branch protection rules does.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Create a repository environment with required reviewers so that a human security engineer must manually approve every pull request opened by the cloud agent before it is merged.",
+        "explanation": "This answer is incorrect. Requiring a human security engineer to review every pull request introduces a manual gate rather than an automated evaluation signal. While human review is valuable, it does not scale for autonomous agent workflows and does not constitute the automated scanning-based success signal the question specifies.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Configure branch protection rules to require that GitHub Advanced Security code scanning alerts are resolved and no new alerts are introduced before a pull request from the cloud agent can be merged.",
+        "explanation": "This answer is correct. Configuring branch protection rules to require GitHub Advanced Security code scanning checks means that every pull request opened by the cloud agent is automatically scanned for vulnerabilities, and the merge is blocked if new alerts are introduced. This provides an objective, automated evaluation signal that directly measures whether the agent's output meets the defined security success criteria without requiring human intervention for each PR.",
+        "isCorrect": true
+      },
+      {
+        "key": "D",
+        "text": "Instruct the cloud agent to include a self-assessment checklist in each pull request description summarizing the security changes it made and confirming no vulnerabilities were introduced.",
+        "explanation": "This answer is incorrect. A self-assessment checklist written by the cloud agent itself is not an independent evaluation signal — it relies on the agent accurately reporting its own work, which cannot be verified automatically. Automated scanning tools must be external to the agent to provide reliable, objective success criteria validation.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 15,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A GitHub Copilot cloud agent is working through a multi-step task and calls an external tool through an MCP server to apply a change to a shared configuration file. The tool call takes several minutes and the response is eventually lost to a network timeout, so the agent does not learn whether the change was applied. The agent retries the call, and the team later finds the configuration entry has been added twice. Which practice most directly prevents this class of failure?",
+    "explanation": "Any tool call that changes state can be delivered without its response reaching the caller, which means the caller cannot distinguish a failed call from a successful one whose acknowledgement was lost. Retrying under that uncertainty is what produces duplicate side effects, and no timeout value removes the uncertainty. The durable fix is to make the operation idempotent so that repeating it with the same input converges on the same end state, typically by reading current state and skipping the write when the desired state already exists. This lets the agent retry transient failures safely instead of choosing between duplicated work and abandoned work. Designing state-changing tool calls for safe repetition is a core requirement for autonomous agents that operate without a human watching each step.\n\nA: This answer is correct. Idempotent operations produce the same end state whether they run once or several times, so a retry after a lost response is safe by construction. Having the agent read current state before writing turns the blind retry into a verified no-op when the change already landed.\nB: This answer is incorrect. A longer timeout narrows the window in which responses are lost but does not eliminate it, and the duplicate is still produced whenever a response goes missing. The failure mode survives any timeout value.\nC: This answer is incorrect. Removing retries trades duplicated work for abandoned work, since a single lost response now fails the whole task. Transient failures are expected and should be recoverable rather than fatal.\nD: This answer is incorrect. Logging makes the duplicate visible after it happens but does nothing to stop it. Detection after the fact still leaves a corrupted configuration file that a human must repair.",
+    "overallExplanation": "Any tool call that changes state can be delivered without its response reaching the caller, which means the caller cannot distinguish a failed call from a successful one whose acknowledgement was lost. Retrying under that uncertainty is what produces duplicate side effects, and no timeout value removes the uncertainty. The durable fix is to make the operation idempotent so that repeating it with the same input converges on the same end state, typically by reading current state and skipping the write when the desired state already exists. This lets the agent retry transient failures safely instead of choosing between duplicated work and abandoned work. Designing state-changing tool calls for safe repetition is a core requirement for autonomous agents that operate without a human watching each step.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Design the state-changing tool call so it is idempotent, having the agent verify the current state before reapplying a change and making repeated calls with the same input produce the same result.",
+        "explanation": "This answer is correct. Idempotent operations produce the same end state whether they run once or several times, so a retry after a lost response is safe by construction. Having the agent read current state before writing turns the blind retry into a verified no-op when the change already landed.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Increase the tool call timeout so the response has more time to arrive before the agent gives up and retries.",
+        "explanation": "This answer is incorrect. A longer timeout narrows the window in which responses are lost but does not eliminate it, and the duplicate is still produced whenever a response goes missing. The failure mode survives any timeout value.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Disable retries entirely for any tool call that modifies state, so a lost response always ends the task.",
+        "explanation": "This answer is incorrect. Removing retries trades duplicated work for abandoned work, since a single lost response now fails the whole task. Transient failures are expected and should be recoverable rather than fatal.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Have the agent record every tool call it makes in a comment on the pull request so a reviewer can spot duplicated operations after the fact.",
+        "explanation": "This answer is incorrect. Logging makes the duplicate visible after it happens but does nothing to stop it. Detection after the fact still leaves a corrupted configuration file that a human must repair.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 16,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team has deployed the GitHub Copilot cloud agent to autonomously handle bug fix tasks in their production repository. During a recent task, the agent encountered an unexpected state: it could not reproduce the reported bug because the required test environment credentials were missing from the repository secrets. The team wants to ensure that when the agent reaches such a blocking condition it cannot resolve autonomously, it follows a defined escalation path rather than attempting workarounds or silently failing. Which configuration approach best implements this escalation path?",
+    "explanation": "When the GitHub Copilot cloud agent reaches a condition it cannot resolve autonomously, a robust escalation path must surface the problem to a human and create an actionable record without allowing the agent to take unsafe compensatory actions. The correct pattern is to instrument the GitHub Actions workflow with post-failure steps that automatically notify and assign a responsible engineer—typically via a GitHub issue with a structured label—ensuring the escalation is traceable, timely, and decoupled from the agent's own decision-making. This keeps the agent's execution path safe and bounded while guaranteeing that unresolved blockers do not silently stall or disappear.\n\nA: This answer is incorrect. Granting the GITHUB_TOKEN elevated write permissions to repository secrets violates the principle of least privilege and introduces a significant security risk. Allowing an autonomous agent to self-provision credentials is an unsafe execution pattern, not a structured escalation path, and could lead to uncontrolled secret sprawl or exploitation.\nB: This answer is incorrect. GitHub Advanced Security's secret scanning is designed to detect secrets accidentally committed to code, not to serve as an escalation mechanism for an agent that encounters missing runtime credentials. Routing a task-blocking condition through a security advisory workflow would be an inappropriate use of that tooling and would likely delay or obscure the operational escalation.\nC: This answer is incorrect. Requiring a manual reviewer approval gate at the start of every workflow run addresses pre-execution authorization, not mid-task escalation when a blocking condition is discovered during execution. This approach would add unnecessary friction to all agent tasks, including those that complete successfully, rather than targeting escalation specifically to situations where the agent cannot proceed.\nD: This answer is correct. Configuring a failure-condition step in the GitHub Actions workflow to open a labeled GitHub issue and assign it to the on-call engineer when the cloud agent exits with a non-zero status code is a well-defined, automated escalation path. This approach ensures that blocking conditions are surfaced to a human decision-maker immediately, without requiring the agent to attempt unsafe workarounds, and creates an auditable record of the escalation event.",
+    "overallExplanation": "When the GitHub Copilot cloud agent reaches a condition it cannot resolve autonomously, a robust escalation path must surface the problem to a human and create an actionable record without allowing the agent to take unsafe compensatory actions. The correct pattern is to instrument the GitHub Actions workflow with post-failure steps that automatically notify and assign a responsible engineer—typically via a GitHub issue with a structured label—ensuring the escalation is traceable, timely, and decoupled from the agent's own decision-making. This keeps the agent's execution path safe and bounded while guaranteeing that unresolved blockers do not silently stall or disappear.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Grant the agent's GITHUB_TOKEN elevated write permissions to all repository secrets so it can self-provision missing credentials and continue executing the task without interruption.",
+        "explanation": "This answer is incorrect. Granting the GITHUB_TOKEN elevated write permissions to repository secrets violates the principle of least privilege and introduces a significant security risk. Allowing an autonomous agent to self-provision credentials is an unsafe execution pattern, not a structured escalation path, and could lead to uncontrolled secret sprawl or exploitation.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Enable GitHub Advanced Security on the repository so that secret scanning alerts notify the security team whenever the agent detects a missing credential, routing the escalation through the security advisory workflow.",
+        "explanation": "This answer is incorrect. GitHub Advanced Security's secret scanning is designed to detect secrets accidentally committed to code, not to serve as an escalation mechanism for an agent that encounters missing runtime credentials. Routing a task-blocking condition through a security advisory workflow would be an inappropriate use of that tooling and would likely delay or obscure the operational escalation.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Set the repository environment protection rule to require a manual reviewer approval gate before any agent-initiated workflow run proceeds, so all tasks pause for human review at the start of every execution.",
+        "explanation": "This answer is incorrect. Requiring a manual reviewer approval gate at the start of every workflow run addresses pre-execution authorization, not mid-task escalation when a blocking condition is discovered during execution. This approach would add unnecessary friction to all agent tasks, including those that complete successfully, rather than targeting escalation specifically to situations where the agent cannot proceed.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Configure the GitHub Actions workflow that invokes the cloud agent to include a failure-condition step that automatically opens a GitHub issue tagged with a specific label and assigns it to the on-call engineer when the agent exits with a non-zero status code.",
+        "explanation": "This answer is correct. Configuring a failure-condition step in the GitHub Actions workflow to open a labeled GitHub issue and assign it to the on-call engineer when the cloud agent exits with a non-zero status code is a well-defined, automated escalation path. This approach ensures that blocking conditions are surfaced to a human decision-maker immediately, without requiring the agent to attempt unsafe workarounds, and creates an auditable record of the escalation event.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 17,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team uses GitHub Actions to run automated code generation workflows. The security team requires that these workflows operate with least-privilege access: they must be able to read repository contents and create pull requests, but must not be able to push directly to protected branches, merge pull requests, or access any other repositories in the organization. Which configuration best enforces these constraints?",
+    "explanation": "Least-privilege access in GitHub Actions workflows is best enforced by explicitly declaring minimal permissions in the workflow YAML, which overrides any broader defaults and limits what the GITHUB_TOKEN can do at runtime. Pairing narrow token permissions (contents: read, pull-requests: write) with branch protection rules that require human review before merging creates a layered control: the token can propose changes but cannot unilaterally apply them, satisfying both automation and security requirements.\n\nA: This answer is incorrect. The default GITHUB_TOKEN includes broader permissions than necessary (such as contents: write by default in many configurations), and simply enabling pull request creation does not restrict the token's other capabilities. This approach does not enforce least-privilege access as required.\nB: This answer is incorrect. Setting permissions: write-all grants the workflow broad access to all available GitHub token scopes, which directly violates the principle of least privilege. While branch protection rules add a safety net, they do not restrict what the token itself can attempt to do, leaving unnecessary permissions exposed.\nC: This answer is incorrect. A fine-grained PAT with contents: write grants the ability to push directly to branches, which violates the requirement to prevent direct pushes. Additionally, scoping the token across all organization repositories far exceeds the access needed for a single repository workflow, violating least-privilege principles.\nD: This answer is correct. Declaring one permissions block with only contents: read and pull-requests: write overrides the broader default and leaves the workflow token able to read code and open pull requests but nothing more. Requiring pull request reviews before merging means the workflow cannot apply its own changes, which satisfies the remaining constraints.",
+    "overallExplanation": "Least-privilege access in GitHub Actions workflows is best enforced by explicitly declaring minimal permissions in the workflow YAML, which overrides any broader defaults and limits what the GITHUB_TOKEN can do at runtime. Pairing narrow token permissions (contents: read, pull-requests: write) with branch protection rules that require human review before merging creates a layered control: the token can propose changes but cannot unilaterally apply them, satisfying both automation and security requirements.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Use the default GITHUB_TOKEN without modifying permissions, and enable \"Allow GitHub Actions to create and approve pull requests\" in the repository settings to grant the necessary access.",
+        "explanation": "This answer is incorrect. The default GITHUB_TOKEN includes broader permissions than necessary (such as contents: write by default in many configurations), and simply enabling pull request creation does not restrict the token's other capabilities. This approach does not enforce least-privilege access as required.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "In the workflow file, set permissions: write-all at the job level to ensure the workflow has sufficient access, and rely on branch protection rules to prevent direct pushes to the main branch.",
+        "explanation": "This answer is incorrect. Setting permissions: write-all grants the workflow broad access to all available GitHub token scopes, which directly violates the principle of least privilege. While branch protection rules add a safety net, they do not restrict what the token itself can attempt to do, leaving unnecessary permissions exposed.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Create a fine-grained personal access token with contents: write and pull-requests: write scopes across all organization repositories, and store it as an organization-level Actions secret for use in the workflow.",
+        "explanation": "This answer is incorrect. A fine-grained PAT with contents: write grants the ability to push directly to branches, which violates the requirement to prevent direct pushes. Additionally, scoping the token across all organization repositories far exceeds the access needed for a single repository workflow, violating least-privilege principles.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "In the workflow file, declare a single permissions block at the job level granting contents: read and pull-requests: write, and configure a ruleset or branch protection on the main branch that requires pull request reviews before merging.",
+        "explanation": "This answer is correct. Declaring one permissions block with only contents: read and pull-requests: write overrides the broader default and leaves the workflow token able to read code and open pull requests but nothing more. Requiring pull request reviews before merging means the workflow cannot apply its own changes, which satisfies the remaining constraints.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 18,
+    "domainCode": "DOM-1",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A platform engineering team is defining the criteria it will use to decide which GitHub Copilot cloud agent actions may run autonomously and which must be gated behind human approval. Engineers on the team have proposed several different criteria, including the number of files changed, the size of the diff, the repository the work happens in, and the nature of the action itself. Which criterion is the most reliable basis for deciding whether an agent action requires human approval?",
+    "explanation": "Deciding autonomy levels well means separating how large a change looks from how much damage it can do. The two properties that determine whether a human must intervene are reversibility, meaning whether the action can be cleanly undone, and blast radius, meaning how far the consequences spread beyond the immediate change. Size-based proxies such as file count or diff length are attractive because they are easy to measure, but they gate large harmless work while permitting small catastrophic work. Applying reversibility and blast radius as the criterion produces a policy where routine code changes proceed autonomously while changes to deployment controls, security settings, and published artifacts stop for human sign-off. This is the reasoning that underpins tiered autonomy models for cloud agents.\n\nA: This answer is incorrect. File count measures the size of a change, not its consequence, and a single-file edit to a deployment configuration can be more damaging than a hundred-file rename. Using file count as the gate produces approval fatigue on harmless work while letting genuinely risky edits through.\nB: This answer is incorrect. Diff size correlates only loosely with risk and is easy to game by splitting work across pull requests. It says nothing about whether the change can be undone once merged.\nC: This answer is incorrect. Completion time is a performance signal, not a risk signal, and fast completion often simply reflects a well-scoped task. Gating on duration would add approval steps that bear no relationship to the potential impact of the change.\nD: This answer is correct. Reversibility and blast radius describe what happens if the action is wrong, which is precisely what an approval gate exists to control. A one-line change that suppresses a security alert or rewrites a deployment control is far more consequential than a large but easily reverted refactor.",
+    "overallExplanation": "Deciding autonomy levels well means separating how large a change looks from how much damage it can do. The two properties that determine whether a human must intervene are reversibility, meaning whether the action can be cleanly undone, and blast radius, meaning how far the consequences spread beyond the immediate change. Size-based proxies such as file count or diff length are attractive because they are easy to measure, but they gate large harmless work while permitting small catastrophic work. Applying reversibility and blast radius as the criterion produces a policy where routine code changes proceed autonomously while changes to deployment controls, security settings, and published artifacts stop for human sign-off. This is the reasoning that underpins tiered autonomy models for cloud agents.",
+    "options": [
+      {
+        "key": "A",
+        "text": "The number of files the agent modifies, since a larger number of touched files always indicates a higher-risk change.",
+        "explanation": "This answer is incorrect. File count measures the size of a change, not its consequence, and a single-file edit to a deployment configuration can be more damaging than a hundred-file rename. Using file count as the gate produces approval fatigue on harmless work while letting genuinely risky edits through.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "The total size of the diff in added and removed lines, since reviewers can absorb small diffs without formal approval gates.",
+        "explanation": "This answer is incorrect. Diff size correlates only loosely with risk and is easy to game by splitting work across pull requests. It says nothing about whether the change can be undone once merged.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Whether the agent completed the task faster than the team's historical average, since unusually fast completion signals shallow reasoning.",
+        "explanation": "This answer is incorrect. Completion time is a performance signal, not a risk signal, and fast completion often simply reflects a well-scoped task. Gating on duration would add approval steps that bear no relationship to the potential impact of the change.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Whether the action is reversible and how wide its blast radius is if it turns out to be wrong, since irreversible or widely propagating actions cannot be corrected after the fact.",
+        "explanation": "This answer is correct. Reversibility and blast radius describe what happens if the action is wrong, which is precisely what an approval gate exists to control. A one-line change that suppresses a security alert or rewrites a deployment control is far more consequential than a large but easily reverted refactor.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 19,
+    "domainCode": "DOM-5",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team is building an automated software delivery pipeline using multiple GitHub Copilot cloud agents. The team wants one agent to analyze incoming GitHub Issues and decompose them into subtasks, a second agent to implement code changes for each subtask, and a third agent to run validation checks before merging. The agents must hand off work sequentially, with each agent's output serving as the next agent's input. Which orchestration pattern best describes this multi-agent coordination approach?",
+    "explanation": "In multi-agent orchestration, a sequential pipeline pattern is used when tasks must be completed in a strict order and each agent's output is a prerequisite for the next agent's work. This pattern is well-suited for software delivery workflows where decomposition, implementation, and validation are distinct, dependent phases. Recognizing the correct orchestration pattern enables teams to design reliable, predictable multi-agent systems using GitHub Copilot cloud agents.\n\nA: This answer is incorrect. A competing consumers pattern involves multiple agents racing to process the same workload, with only one \"winning\" agent's result being used. The scenario requires all three agents to contribute distinct, complementary roles in a coordinated sequence, not compete for the same task.\nB: This answer is incorrect. A fan-out pattern distributes the same work to multiple agents in parallel for concurrent processing, then consolidates results. The scenario describes strictly sequential handoffs where each agent depends on the prior agent's completed output, which does not match parallel fan-out behavior.\nC: This answer is incorrect. A peer-to-peer pattern lacks centralized coordination and relies on agents dynamically negotiating responsibilities at runtime. The scenario explicitly requires a predefined, ordered workflow where each agent has a designated role and a defined position in the execution sequence, which peer-to-peer negotiation does not provide.\nD: This answer is correct. A sequential pipeline pattern defines a fixed execution order in which each agent performs a specialized role and passes its output downstream. This matches the described workflow: the analysis agent decomposes issues, the implementation agent acts on those subtasks, and the validation agent checks the results before merging, with each stage gating the next.",
+    "overallExplanation": "In multi-agent orchestration, a sequential pipeline pattern is used when tasks must be completed in a strict order and each agent's output is a prerequisite for the next agent's work. This pattern is well-suited for software delivery workflows where decomposition, implementation, and validation are distinct, dependent phases. Recognizing the correct orchestration pattern enables teams to design reliable, predictable multi-agent systems using GitHub Copilot cloud agents.",
+    "options": [
+      {
+        "key": "A",
+        "text": "A competing consumers pattern, where all three agents independently process the same issue and the first agent to complete its task triggers an automatic merge.",
+        "explanation": "This answer is incorrect. A competing consumers pattern involves multiple agents racing to process the same workload, with only one \"winning\" agent's result being used. The scenario requires all three agents to contribute distinct, complementary roles in a coordinated sequence, not compete for the same task.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "A fan-out pattern, where the orchestrator agent broadcasts each issue simultaneously to all three agents and aggregates their independent results into a single pull request.",
+        "explanation": "This answer is incorrect. A fan-out pattern distributes the same work to multiple agents in parallel for concurrent processing, then consolidates results. The scenario describes strictly sequential handoffs where each agent depends on the prior agent's completed output, which does not match parallel fan-out behavior.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "A peer-to-peer pattern, where each agent directly negotiates task ownership with the other agents at runtime without a predefined execution order.",
+        "explanation": "This answer is incorrect. A peer-to-peer pattern lacks centralized coordination and relies on agents dynamically negotiating responsibilities at runtime. The scenario explicitly requires a predefined, ordered workflow where each agent has a designated role and a defined position in the execution sequence, which peer-to-peer negotiation does not provide.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "A sequential pipeline pattern, where each agent completes its designated role and passes structured output to the next agent in a defined order before the workflow proceeds.",
+        "explanation": "This answer is correct. A sequential pipeline pattern defines a fixed execution order in which each agent performs a specialized role and passes its output downstream. This matches the described workflow: the analysis agent decomposes issues, the implementation agent acts on those subtasks, and the validation agent checks the results before merging, with each stage gating the next.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 20,
+    "domainCode": "DOM-1",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A fintech organization is configuring the GitHub Copilot cloud agent for their development teams. They want to maximize delivery speed for routine bug fixes and feature work while remaining compliant with their security policies. Their security requirements include: all code changes must be scanned by GitHub Advanced Security before merging, no direct pushes to the main branch are permitted, and the agent must not have access to production secrets. Which autonomy configuration best satisfies both the delivery speed and compliance requirements?",
+    "explanation": "Right-sizing autonomy means letting routine work proceed without approval while making the non-negotiable controls automatic and unavoidable. Isolating the agent from production credentials removes the highest-consequence access, and enforcing code scanning results as a merge condition keeps the security requirement in force on every change without adding a queue. The agent's own credentials are already constrained to pushing to its branch and opening pull requests, so speed comes from removing unnecessary gates rather than from granting extra permissions. Configurations that widen access or let an automated actor relax its own controls invert the model and are incompatible with the stated compliance requirements.\n\nA: This answer is incorrect. Providing admin-level GITHUB_TOKEN permissions and allowing the agent to disable security scans dynamically violates both the Responsible AI principle of maintaining human oversight and the explicit organizational requirement that GitHub Advanced Security scans must run before merging. Letting an agent bypass its own compliance controls introduces significant security risk and is contrary to sound autonomy-level design.\nB: This answer is correct. Keeping production credentials out of the environments the agent can reach satisfies the secret-isolation requirement, and requiring scanning results to pass before merge enforces the security gate without a person standing in the path of routine work. The agent's built-in credentials already limit it to pushing to its own branch and opening pull requests, so no additional access needs to be granted for it to deliver work quickly.\nC: This answer is incorrect. Restricting the cloud agent to read-only access and requiring a human to manually re-implement every suggestion negates the delivery speed benefit of using the cloud agent entirely. This configuration is overly conservative and does not represent a practical autonomy level that balances speed with compliance.\nD: This answer is incorrect. Granting write access to all repositories and disabling branch protection rules removes critical compliance guardrails, violating the requirement that GitHub Advanced Security scans must pass before merging. This configuration maximizes speed at the expense of security, which does not satisfy the stated organizational requirements.",
+    "overallExplanation": "Right-sizing autonomy means letting routine work proceed without approval while making the non-negotiable controls automatic and unavoidable. Isolating the agent from production credentials removes the highest-consequence access, and enforcing code scanning results as a merge condition keeps the security requirement in force on every change without adding a queue. The agent's own credentials are already constrained to pushing to its branch and opening pull requests, so speed comes from removing unnecessary gates rather than from granting extra permissions. Configurations that widen access or let an automated actor relax its own controls invert the model and are incompatible with the stated compliance requirements.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Allow the cloud agent to use a GITHUB_TOKEN with admin permissions so it can manage branch protection rules dynamically, temporarily disabling security scans when the agent determines a change is low-risk to improve throughput.",
+        "explanation": "This answer is incorrect. Providing admin-level GITHUB_TOKEN permissions and allowing the agent to disable security scans dynamically violates both the Responsible AI principle of maintaining human oversight and the explicit organizational requirement that GitHub Advanced Security scans must run before merging. Letting an agent bypass its own compliance controls introduces significant security risk and is contrary to sound autonomy-level design.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Have the agent work on isolated branches in a repository whose environments exclude production secrets, require code scanning results to pass in the ruleset protecting the default branch before a pull request can merge, and rely on the agent's own constrained credentials, which let it push to its branch and open pull requests but nothing more.",
+        "explanation": "This answer is correct. Keeping production credentials out of the environments the agent can reach satisfies the secret-isolation requirement, and requiring scanning results to pass before merge enforces the security gate without a person standing in the path of routine work. The agent's built-in credentials already limit it to pushing to its own branch and opening pull requests, so no additional access needs to be granted for it to deliver work quickly.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Restrict the cloud agent to read-only access across all repositories and require a human developer to manually re-implement every change the agent proposes before opening a pull request.",
+        "explanation": "This answer is incorrect. Restricting the cloud agent to read-only access and requiring a human to manually re-implement every suggestion negates the delivery speed benefit of using the cloud agent entirely. This configuration is overly conservative and does not represent a practical autonomy level that balances speed with compliance.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Grant the cloud agent a fine-grained personal access token with write access to all repositories and disable branch protection rules on feature branches so the agent can push and merge changes without interruption.",
+        "explanation": "This answer is incorrect. Granting write access to all repositories and disabling branch protection rules removes critical compliance guardrails, violating the requirement that GitHub Advanced Security scans must pass before merging. This configuration maximizes speed at the expense of security, which does not satisfy the stated organizational requirements.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 21,
+    "domainCode": "DOM-5",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A platform engineering team has been running a GitHub Copilot cloud agent that automates dependency update pull requests across 47 repositories. The agent uses a fine-grained personal access token scoped to those repositories and is referenced in multiple GitHub Actions workflows. The team has decided to retire this agent and replace it with a newer implementation. To ensure auditability and workflow continuity during the transition, which approach should the team take?",
+    "explanation": "Retiring an agent in a multi-agent workflow requires balancing security (revoking credentials promptly) with auditability (preserving records of past actions) and continuity (ensuring no gap in automated processes). The correct approach sequences the transition carefully: validate the new agent first, preserve all historical records in GitHub Actions and pull requests, and only then revoke the retired agent's fine-grained personal access token, while keeping old workflow definitions accessible in version control history for future reference.\n\nA: This answer is incorrect. Immediately revoking the token and deleting workflows before the new agent is validated creates a continuity gap and destroys the audit trail. Deleting workflow files removes historical context that auditors and future engineers may need to understand past automated actions.\nB: This answer is incorrect. Archiving the repositories managed by the agent is an overly disruptive action that affects all consumers of those repositories, not just the retiring agent. Additionally, removing token permissions without a validated replacement in place breaks workflow continuity rather than preserving it.\nC: This answer is incorrect. Sharing a single token between a retired agent and its replacement creates a security and accountability risk, as actions cannot be attributed to a specific agent. Converting to a classic personal access token weakens the security posture by removing fine-grained scoping, which contradicts best practices for agent lifecycle management.\nD: This answer is correct. Preserving GitHub Actions workflow run history and pull request records maintains the full audit trail of the retired agent's activity. Revoking the token only after the new agent is validated ensures continuity, and retaining old workflow definitions in version control history allows future auditors to understand the previous implementation without disrupting active workflows.",
+    "overallExplanation": "Retiring an agent in a multi-agent workflow requires balancing security (revoking credentials promptly) with auditability (preserving records of past actions) and continuity (ensuring no gap in automated processes). The correct approach sequences the transition carefully: validate the new agent first, preserve all historical records in GitHub Actions and pull requests, and only then revoke the retired agent's fine-grained personal access token, while keeping old workflow definitions accessible in version control history for future reference.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Immediately revoke the fine-grained personal access token, delete the agent's associated GitHub Actions workflows, and redeploy the new agent with a fresh token and new workflow files referencing only the new agent.",
+        "explanation": "This answer is incorrect. Immediately revoking the token and deleting workflows before the new agent is validated creates a continuity gap and destroys the audit trail. Deleting workflow files removes historical context that auditors and future engineers may need to understand past automated actions.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Disable the agent by removing its token permissions, archive the repositories it managed, and document the retirement date in the organization's README before deploying the new agent.",
+        "explanation": "This answer is incorrect. Archiving the repositories managed by the agent is an overly disruptive action that affects all consumers of those repositories, not just the retiring agent. Additionally, removing token permissions without a validated replacement in place breaks workflow continuity rather than preserving it.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Convert the retired agent's fine-grained personal access token to a classic personal access token to extend its validity, keep the existing workflows unchanged, and configure the new agent to share the same token to maintain a continuous audit trail.",
+        "explanation": "This answer is incorrect. Sharing a single token between a retired agent and its replacement creates a security and accountability risk, as actions cannot be attributed to a specific agent. Converting to a classic personal access token weakens the security posture by removing fine-grained scoping, which contradicts best practices for agent lifecycle management.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Preserve the existing GitHub Actions workflow run history and pull request records, revoke the retired agent's fine-grained personal access token after the new agent is validated, and update workflow files to reference the new agent while retaining the old workflow definitions in version control history.",
+        "explanation": "This answer is correct. Preserving GitHub Actions workflow run history and pull request records maintains the full audit trail of the retired agent's activity. Revoking the token only after the new agent is validated ensures continuity, and retaining old workflow definitions in version control history allows future auditors to understand the previous implementation without disrupting active workflows.",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "orderIndex": 22,
+    "domainCode": "DOM-4",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A team has deployed a GitHub Copilot cloud agent to automate pull request creation for routine dependency updates. After reviewing evaluation results, the team identifies a recurring problem: the agent frequently opens PRs that modify unrelated configuration files alongside the dependency changes, causing reviewers to reject the PRs. The team wants to revise the agent's behavior to eliminate this scope creep. Which approach most directly addresses this issue?",
+    "explanation": "When evaluation results reveal that an agent is consistently exceeding its intended scope, the correct remediation is to revise the agent's instructions to impose explicit constraints on the files or resources it may interact with during a given task. Instruction revision is a core technique for tuning agent behavior because it directly shapes the agent's decision-making before any action is taken. Downstream controls such as branch protection rules or permission scoping are complementary safeguards but do not substitute for clear behavioral guidance embedded in the agent's instructions.\n\nA: This answer is correct. Updating the agent's instructions to explicitly define which file types it is permitted to modify directly revises the agent's behavior based on evaluation findings. This is the most targeted intervention because it constrains the agent's scope at the instruction level, preventing out-of-scope changes before a PR is ever opened.\nB: This answer is incorrect. Adding a branch protection rule and a GitHub Actions status check can help catch undesired changes after the PR is opened, but it does not prevent the agent from making out-of-scope edits in the first place. This approach addresses symptom detection rather than revising the agent's behavior to eliminate the root cause.\nC: This answer is incorrect. Using GitHub Codespaces as the execution environment isolates the development environment but does not change what files the agent is instructed to modify. The agent would still exhibit the same scope-creep behavior inside the Codespace, and the resulting commits would still include unrelated file changes.\nD: This answer is incorrect. Changing the GITHUB_TOKEN to a fine-grained personal access token scoped to a single branch restricts where the agent can push changes, but does not prevent the agent from staging or committing modifications to unrelated configuration files within that branch. Permission scoping addresses access boundaries, not task scope.",
+    "overallExplanation": "When evaluation results reveal that an agent is consistently exceeding its intended scope, the correct remediation is to revise the agent's instructions to impose explicit constraints on the files or resources it may interact with during a given task. Instruction revision is a core technique for tuning agent behavior because it directly shapes the agent's decision-making before any action is taken. Downstream controls such as branch protection rules or permission scoping are complementary safeguards but do not substitute for clear behavioral guidance embedded in the agent's instructions.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Update the agent's instructions to explicitly constrain its scope, specifying that it must only modify dependency manifest files (such as package.json or requirements.txt) and must not edit any other file types during a dependency update task.",
+        "explanation": "This answer is correct. Updating the agent's instructions to explicitly define which file types it is permitted to modify directly revises the agent's behavior based on evaluation findings. This is the most targeted intervention because it constrains the agent's scope at the instruction level, preventing out-of-scope changes before a PR is ever opened.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Add a branch protection rule to the target branch that requires all PRs to pass a GitHub Actions status check before merging, so unrelated file changes are caught automatically.",
+        "explanation": "This answer is incorrect. Adding a branch protection rule and a GitHub Actions status check can help catch undesired changes after the PR is opened, but it does not prevent the agent from making out-of-scope edits in the first place. This approach addresses symptom detection rather than revising the agent's behavior to eliminate the root cause.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Switch the agent's workflow to use GitHub Codespaces as its execution environment so that file system changes are isolated within the cloud development environment.",
+        "explanation": "This answer is incorrect. Using GitHub Codespaces as the execution environment isolates the development environment but does not change what files the agent is instructed to modify. The agent would still exhibit the same scope-creep behavior inside the Codespace, and the resulting commits would still include unrelated file changes.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Revoke the agent's GITHUB_TOKEN permissions to write access on the repository and replace them with a fine-grained personal access token scoped to a single branch.",
+        "explanation": "This answer is incorrect. Changing the GITHUB_TOKEN to a fine-grained personal access token scoped to a single branch restricts where the agent can push changes, but does not prevent the agent from staging or committing modifications to unrelated configuration files within that branch. Permission scoping addresses access boundaries, not task scope.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 23,
+    "domainCode": "DOM-1",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team is writing the task specification for a GitHub Copilot cloud agent that resolves bug issues autonomously. The specification already defines the success criteria: a pull request that links the originating issue and passes the required checks. During review, the team lead points out that the specification says nothing about what the agent should do when it cannot reach that outcome, and that past runs have burned significant time on repeated failing attempts. Which addition to the task specification most directly addresses this gap?",
+    "explanation": "A task specification is only complete when it defines failure as precisely as it defines success. Success criteria describe the target state, while stop conditions describe the point at which continuing is no longer productive and the work must return to a human. For a bug-fix agent, a bounded number of failed check runs is a clear, machine-observable stop condition, and requiring a written summary of the attempts converts the stop into a useful handoff rather than a silent abandonment. Loosening the success criteria or extending the runtime addresses the symptom of long runs without giving the agent any defined exit. Pairing an outcome definition with an explicit stop condition is what makes autonomous task execution bounded and reviewable.\n\nA: This answer is incorrect. Letting the agent change the tests that judge its own work removes the independent signal the success criteria depend on. It converts a blocked task into a silently wrong one.\nB: This answer is correct. A complete task specification defines both the target outcome and the conditions under which the agent must stop and hand back to a human. Bounding retries and requiring a written account of the blocking condition turns wasted looping into an actionable handoff.\nC: This answer is incorrect. Weakening the success criteria makes the specification easier to satisfy without making the resulting work correct. Opening a pull request that fails its checks is not a resolved bug.\nD: This answer is incorrect. A longer timeout gives a stuck agent more time to stay stuck and does not create any handoff when the outcome cannot be reached. The problem is the absence of a defined stop condition, not insufficient runtime.",
+    "overallExplanation": "A task specification is only complete when it defines failure as precisely as it defines success. Success criteria describe the target state, while stop conditions describe the point at which continuing is no longer productive and the work must return to a human. For a bug-fix agent, a bounded number of failed check runs is a clear, machine-observable stop condition, and requiring a written summary of the attempts converts the stop into a useful handoff rather than a silent abandonment. Loosening the success criteria or extending the runtime addresses the symptom of long runs without giving the agent any defined exit. Pairing an outcome definition with an explicit stop condition is what makes autonomous task execution bounded and reviewable.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Increase the agent's permissions so it can modify the test configuration when checks fail repeatedly, allowing it to reach a passing state on its own.",
+        "explanation": "This answer is incorrect. Letting the agent change the tests that judge its own work removes the independent signal the success criteria depend on. It converts a blocked task into a silently wrong one.",
+        "isCorrect": false
+      },
+      {
+        "key": "B",
+        "text": "Define explicit stop conditions, such as halting after a set number of consecutive failed check runs on its branch and posting a summary of what it tried and where it became blocked.",
+        "explanation": "This answer is correct. A complete task specification defines both the target outcome and the conditions under which the agent must stop and hand back to a human. Bounding retries and requiring a written account of the blocking condition turns wasted looping into an actionable handoff.",
+        "isCorrect": true
+      },
+      {
+        "key": "C",
+        "text": "Remove the required checks from the success criteria so a pull request counts as successful once it is opened, regardless of check results.",
+        "explanation": "This answer is incorrect. Weakening the success criteria makes the specification easier to satisfy without making the resulting work correct. Opening a pull request that fails its checks is not a resolved bug.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Add a longer overall timeout to the agent's task so it has more opportunity to reach the defined success criteria before the session ends.",
+        "explanation": "This answer is incorrect. A longer timeout gives a stuck agent more time to stay stuck and does not create any handoff when the outcome cannot be reached. The problem is the absence of a defined stop condition, not insufficient runtime.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 24,
+    "domainCode": "DOM-3",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A GitHub Copilot cloud agent has been working on a multi-step refactoring task across several files in a repository. After completing 60% of the planned changes, the agent session is interrupted. When resuming the task, a developer wants to ensure the agent continues from where it left off without re-executing completed steps or making decisions that contradict its earlier choices. Which approach best achieves this goal?",
+    "explanation": "Persisting agent state when resuming interrupted work requires leveraging the artifacts the agent already created — the pull request, branch, and comment thread — as a shared memory store. By providing a structured follow-up comment on the existing pull request that explicitly identifies completed steps and remaining work, the developer anchors the agent's context and prevents it from drifting into contradictory decisions or redundant actions. This is the core pattern for managing context drift in GitHub Copilot cloud agent workflows.\n\nA: This answer is correct. Referencing the existing pull request preserves the agent's prior work, branch state, and decision history, while the follow-up comment explicitly anchors the agent's context by summarizing what is done and what remains. This pattern prevents context drift by giving the agent a clear, structured handoff point rather than requiring it to reconstruct intent from code diffs alone.\nB: This answer is incorrect. Reassigning the agent without a guiding summary places excessive reliance on the agent inferring decisions solely from file diffs, which is unreliable for capturing architectural or stylistic choices that were made but may not be obvious from code changes. Without explicit context about completed steps, the agent risks re-attempting finished work or making contradictory decisions.\nC: This answer is incorrect. Opening a new issue discards the agent's recorded progress and forces a complete restart, which risks re-executing already-completed steps and potentially making conflicting decisions about code that was already refactored. This approach directly undermines the goal of resuming without repeating work or diverging from prior decisions.\nD: This answer is incorrect. Deleting the working branch and restarting from the default branch discards all partial progress and forces the agent to redo completed work, which is the opposite of resuming state. This approach also eliminates the record of prior decisions captured in the branch history and pull request comments.",
+    "overallExplanation": "Persisting agent state when resuming interrupted work requires leveraging the artifacts the agent already created — the pull request, branch, and comment thread — as a shared memory store. By providing a structured follow-up comment on the existing pull request that explicitly identifies completed steps and remaining work, the developer anchors the agent's context and prevents it from drifting into contradictory decisions or redundant actions. This is the core pattern for managing context drift in GitHub Copilot cloud agent workflows.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Reopen the interrupted session by referencing the existing issue or pull request where the agent recorded its progress, and provide a follow-up comment that summarizes completed steps and explicitly states which remaining steps the agent should execute next.",
+        "explanation": "This answer is correct. Referencing the existing pull request preserves the agent's prior work, branch state, and decision history, while the follow-up comment explicitly anchors the agent's context by summarizing what is done and what remains. This pattern prevents context drift by giving the agent a clear, structured handoff point rather than requiring it to reconstruct intent from code diffs alone.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Assign the agent to the original issue again without any additional context, relying on the agent to automatically detect the existing pull request branch and infer all prior decisions from the changed files alone.",
+        "explanation": "This answer is incorrect. Reassigning the agent without a guiding summary places excessive reliance on the agent inferring decisions solely from file diffs, which is unreliable for capturing architectural or stylistic choices that were made but may not be obvious from code changes. Without explicit context about completed steps, the agent risks re-attempting finished work or making contradictory decisions.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Close the interrupted issue and open a new one with the full original instructions, allowing the agent to start fresh with a clean context and avoid any confusion from the partial prior work.",
+        "explanation": "This answer is incorrect. Opening a new issue discards the agent's recorded progress and forces a complete restart, which risks re-executing already-completed steps and potentially making conflicting decisions about code that was already refactored. This approach directly undermines the goal of resuming without repeating work or diverging from prior decisions.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Delete the agent's working branch, recreate it from the default branch, and reassign the task so the agent begins from a known clean state, ensuring no partial changes cause inconsistencies.",
+        "explanation": "This answer is incorrect. Deleting the working branch and restarting from the default branch discards all partial progress and forces the agent to redo completed work, which is the opposite of resuming state. This approach also eliminates the record of prior decisions captured in the branch history and pull request comments.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "orderIndex": 25,
+    "domainCode": "DOM-2",
+    "type": "SINGLE_CHOICE",
+    "difficulty": "MEDIUM",
+    "text": "A development team is using the GitHub Copilot cloud agent to autonomously implement a new API integration feature. During execution, the agent encounters an unexpected HTTP 503 error from an external service while attempting to validate its implementation. The team wants to ensure the agent handles this gracefully without abandoning the task or making unrecoverable changes to the codebase. Which approach best ensures safe execution and robust error handling for the agent in this scenario?",
+    "explanation": "When operating the GitHub Copilot cloud agent safely, robust error handling means anticipating failure modes — such as transient external service errors — and embedding explicit recovery strategies (like retries with exponential backoff) directly into the agent's task instructions. If recovery fails, the agent should surface clear, actionable feedback on the originating issue rather than committing partial work, ensuring humans can intervene appropriately. This approach balances autonomous execution with the transparency and safety guardrails required for production-grade agent workflows.\n\nA: This answer is correct. Providing the agent with explicit fallback logic in its task instructions — including retry strategies for transient errors like HTTP 503 — is the recommended approach for robust error handling. Instructing the agent to surface a detailed status comment on the originating issue ensures the team is informed if the error persists, keeping humans in the loop while the agent attempts safe recovery.\nB: This answer is incorrect. Opening a pull request with partial, potentially broken changes does not constitute robust error handling — it risks introducing incomplete or unstable code into the review pipeline. While surfacing a comment is useful, committing partial work without retry logic or graceful degradation is not a safe execution pattern for the GitHub Copilot cloud agent.\nC: This answer is incorrect. GitHub Advanced Security is designed to detect vulnerabilities, secrets, and dependency risks in code — it is not a mechanism for handling runtime errors during agent execution. Enabling it does not provide the agent with any error recovery capability and does not address the HTTP 503 failure scenario.\nD: This answer is incorrect. Expanding the agent's token permissions to organization-wide write access is a security anti-pattern that violates the principle of least privilege. Broadening permissions does not address the root cause of the transient service error and introduces unnecessary risk of unintended changes across repositories.",
+    "overallExplanation": "When operating the GitHub Copilot cloud agent safely, robust error handling means anticipating failure modes — such as transient external service errors — and embedding explicit recovery strategies (like retries with exponential backoff) directly into the agent's task instructions. If recovery fails, the agent should surface clear, actionable feedback on the originating issue rather than committing partial work, ensuring humans can intervene appropriately. This approach balances autonomous execution with the transparency and safety guardrails required for production-grade agent workflows.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Configure the agent's task instructions to include explicit fallback logic, such as catching transient errors and retrying with exponential backoff, and instruct the agent to surface a detailed status comment on the originating issue if the error persists after retries.",
+        "explanation": "This answer is correct. Providing the agent with explicit fallback logic in its task instructions — including retry strategies for transient errors like HTTP 503 — is the recommended approach for robust error handling. Instructing the agent to surface a detailed status comment on the originating issue ensures the team is informed if the error persists, keeping humans in the loop while the agent attempts safe recovery.",
+        "isCorrect": true
+      },
+      {
+        "key": "B",
+        "text": "Configure the agent to immediately open a pull request with whatever partial changes have been made, then post a comment on the issue explaining that the task could not be completed due to the external service error.",
+        "explanation": "This answer is incorrect. Opening a pull request with partial, potentially broken changes does not constitute robust error handling — it risks introducing incomplete or unstable code into the review pipeline. While surfacing a comment is useful, committing partial work without retry logic or graceful degradation is not a safe execution pattern for the GitHub Copilot cloud agent.",
+        "isCorrect": false
+      },
+      {
+        "key": "C",
+        "text": "Enable GitHub Advanced Security on the repository so that any code written during the failed execution is automatically scanned and blocked before it can be merged.",
+        "explanation": "This answer is incorrect. GitHub Advanced Security is designed to detect vulnerabilities, secrets, and dependency risks in code — it is not a mechanism for handling runtime errors during agent execution. Enabling it does not provide the agent with any error recovery capability and does not address the HTTP 503 failure scenario.",
+        "isCorrect": false
+      },
+      {
+        "key": "D",
+        "text": "Grant the agent a fine-grained personal access token with write access to all repositories in the organization so it has sufficient permissions to retry the operation across any available environment.",
+        "explanation": "This answer is incorrect. Expanding the agent's token permissions to organization-wide write access is a security anti-pattern that violates the principle of least privilege. Broadening permissions does not address the root cause of the transient service error and introduces unnecessary risk of unintended changes across repositories.",
+        "isCorrect": false
+      }
+    ]
+  }
+]

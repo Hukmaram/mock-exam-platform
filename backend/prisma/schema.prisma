@@ -1,0 +1,298 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum QuestionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ExamStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  AUTO_SUBMITTED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id                   String        @id @default(uuid())
+  email                String        @unique
+  passwordHash         String
+  name                 String
+  role                 Role          @default(USER)
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  attempts             Attempt[]
+  orders               Order[]
+  entitlements         Entitlement[]
+
+  @@index([email])
+}
+
+model Certification {
+  id          String        @id @default(uuid())
+  name        String
+  code        String        // e.g. "GH-600"
+  slug        String        @unique // e.g. "gh-600"
+  description String        @db.Text
+  isPublished Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  domains      Domain[]
+  questions    Question[]
+  exams        Exam[]
+  products     Product[]
+  entitlements Entitlement[]
+
+  @@index([slug])
+}
+
+model Domain {
+  id              String        @id @default(uuid())
+  certificationId String
+  name            String
+  code            String?       // e.g. "D1"
+  description     String?       @db.Text
+  weight          Float?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  questions       Question[]
+
+  @@index([certificationId])
+}
+
+model Question {
+  id              String         @id @default(uuid())
+  certificationId String
+  domainId        String
+  text            String         @db.Text
+  type            QuestionType   @default(SINGLE_CHOICE)
+  difficulty      Difficulty     @default(MEDIUM)
+  status          QuestionStatus @default(DRAFT)
+  explanation     String         @db.Text
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  certification   Certification  @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  domain          Domain         @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  options         QuestionOption[]
+  examQuestions   ExamQuestion[]
+  attemptAnswers  AttemptAnswer[]
+
+  @@index([certificationId, status])
+  @@index([certificationId, domainId, status])
+}
+
+model QuestionOption {
+  id          String   @id @default(uuid())
+  questionId  String
+  key         String   // A, B, C, D
+  text        String   @db.Text
+  isCorrect   Boolean  @default(false)
+  explanation String?  @db.Text
+
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Exam {
+  id                String         @id @default(uuid())
+  certificationId   String
+  title             String
+  slug              String
+  description       String?        @db.Text
+  durationMinutes   Int            @default(90)
+  totalQuestions    Int            @default(60)
+  passingPercentage Float          @default(70.0)
+  status            ExamStatus     @default(DRAFT)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  certification     Certification  @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  examQuestions     ExamQuestion[]
+  attempts          Attempt[]
+  products          Product[]
+  entitlements      Entitlement[]
+
+  @@index([certificationId, status])
+}
+
+model ExamQuestion {
+  id         String   @id @default(uuid())
+  examId     String
+  questionId String
+  orderIndex Int      @default(0)
+
+  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, questionId])
+  @@index([examId, orderIndex])
+}
+
+model Attempt {
+  id               String         @id @default(uuid())
+  userId           String
+  examId           String
+  startedAt        DateTime       @default(now())
+  expiresAt        DateTime
+  submittedAt      DateTime?
+  status           AttemptStatus  @default(IN_PROGRESS)
+  score            Float?
+  totalQuestions   Int
+  correctCount     Int?
+  incorrectCount   Int?
+  unansweredCount  Int?
+  percentage       Float?
+  isPassed         Boolean?
+  domainBreakdown  Json?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam             Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+  answers          AttemptAnswer[]
+
+  @@index([userId, examId])
+  @@index([userId, status])
+}
+
+model AttemptAnswer {
+  id                String   @id @default(uuid())
+  attemptId         String
+  questionId        String
+  selectedOptionIds Json     @default("[]") // Array of selected option IDs
+  isMarkedForReview Boolean  @default(false)
+  isAnswered        Boolean  @default(false)
+  isCorrect         Boolean?
+  answeredAt        DateTime?
+
+  attempt           Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question          Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+}
+
+model Product {
+  id               String         @id @default(uuid())
+  name             String
+  description      String?        @db.Text
+  priceInr         Int            // in INR
+  certificationId  String?
+  examId           String?
+  isPlatformAccess Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  features         Json?          // Array of strings
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+  exam            Exam?          @relation(fields: [examId], references: [id], onDelete: SetNull)
+  orders          Order[]
+  entitlements    Entitlement[]
+}
+
+model Order {
+  id                String         @id @default(uuid())
+  orderNumber       String         @unique
+  userId            String
+  productId         String
+  amount            Int            // In INR
+  currency          String         @default("INR")
+  status            OrderStatus    @default(PENDING)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product           Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  payments          Payment[]
+
+  @@index([userId, status])
+  @@index([razorpayOrderId])
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  orderId          String
+  gateway          String        @default("RAZORPAY")
+  gatewayPaymentId String
+  amount           Int
+  status           PaymentStatus @default(PENDING)
+  rawPayload       Json?
+  createdAt        DateTime      @default(now())
+
+  order            Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model Entitlement {
+  id               String         @id @default(uuid())
+  userId           String
+  productId        String
+  certificationId  String?
+  examId           String?
+  isPlatformAccess Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product         Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+  exam            Exam?          @relation(fields: [examId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, productId])
+  @@index([userId, certificationId])
+  @@index([userId, examId])
+  @@index([userId, isPlatformAccess])
+}
